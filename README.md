@@ -1,6 +1,8 @@
 # barista
 
-TODO: Write a description here
+Task runner framework that supports concurrent builds against a graph of dependencies.
+
+Usage: see `examples/coffee_shop.cr`
 
 ## Installation
 
@@ -9,26 +11,27 @@ TODO: Write a description here
    ```yaml
    dependencies:
      barista:
-       github: your-github-user/barista
+       gitlab: skinnyjames/barista
    ```
 
 2. Run `shards install`
 
 ## Usage
 
-```crystal
-require "barista"
-```
+Run the example
 
-TODO: Write usage instructions here
+```
+docker build -t coffeeshop .
+docker run -it coffeeshop bash
+
+./coffee-shop build --workers=4
+```
 
 ## Development
 
-TODO: Write development instructions here
-
 ## Contributing
 
-1. Fork it (<https://github.com/your-github-user/barista/fork>)
+1. Fork it (<https://gitlab.com/skinnyjames/barista/-/forks/new>)
 2. Create your feature branch (`git checkout -b my-new-feature`)
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
@@ -36,4 +39,4 @@ TODO: Write development instructions here
 
 ## Contributors
 
-- [Sean Gregory](https://github.com/your-github-user) - creator and maintainer
+- [Sean Gregory](https://gitlab.com/skinnyjames) - creator and maintainer

@@ -3,8 +3,11 @@ require "./spec_helper"
 private class OrchestratorTestProject < Barista::Project
 end
 
-private class Task1 < Barista::Task(OrchestratorTestProject)
-  def initialize(@log : Barista::RichLogger); end
+@[Project(OrchestratorTestProject)]
+private class Task1 < Barista::Task
+  def initialize(@log : Barista::RichLogger); 
+    super()
+  end
   getter :log
 
   def execute
@@ -13,8 +16,11 @@ private class Task1 < Barista::Task(OrchestratorTestProject)
   end
 end
 
-private class Task2 < Barista::Task(OrchestratorTestProject)
-  def initialize(@log : Barista::RichLogger); end
+@[Project(OrchestratorTestProject)]
+private class Task2 < Barista::Task
+  def initialize(@log : Barista::RichLogger);  
+    super()
+  end
   getter :log
 
   def execute
@@ -22,12 +28,15 @@ private class Task2 < Barista::Task(OrchestratorTestProject)
   end
 end
 
-private class Task3 < Barista::Task(OrchestratorTestProject)
+@[Project(OrchestratorTestProject)]
+private class Task3 < Barista::Task
   dependency Task2
 
   getter :log
 
-  def initialize(@log : Barista::RichLogger); end
+  def initialize(@log : Barista::RichLogger);  
+    super()
+  end
 
   def execute
     log.info { "task3" }
@@ -38,14 +47,17 @@ describe Barista::Orchestrator do
   it "executes the tasks in a project" do
     colors = Barista::ColorIterator.new
     project = OrchestratorTestProject.new
-    registry = Barista::Registry(Barista::Task(OrchestratorTestProject)).new
 
-    orchestrator = Barista::Orchestrator(OrchestratorTestProject).new(project.registry, workers: 3) do |constructor|
-      task = constructor.new(Barista::RichLogger.new(colors.next, constructor.name))
+    puts project.tasks
+
+    project.tasks.each do |task|
+      task.new(::Barista::RichLogger.new(colors.next, task.name))
     end
 
+    orchestrator = Barista::Orchestrator(Barista::Task).new(project.registry, workers: 3)
+
     with_io do |io|
-      orchestrator.build
+      orchestrator.execute
       io.to_s.should match(/(.)*task2(.)*task3(.)*task1/m)
     end
   end

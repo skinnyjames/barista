@@ -1,0 +1,10 @@
+--- file_to_patch.yml	2022-09-05 15:38:03.000000000 -0400
++++ modified_file.yml	2022-09-05 15:39:43.000000000 -0400
+@@ -1,4 +1,4 @@
+ some_file:
+   key:
+     one: two
+-    three: four
+\ No newline at end of file
++    four: five
+\ No newline at end of file

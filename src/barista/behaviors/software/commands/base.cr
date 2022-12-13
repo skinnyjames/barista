@@ -24,7 +24,7 @@ module Barista
             @on_error = block
             self
           end
-          
+
           # A unique string representing this command
           #
           # used to calculate the shasum for the builder

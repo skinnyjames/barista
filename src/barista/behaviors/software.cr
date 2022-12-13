@@ -1,3 +1,6 @@
+require "openssl"
+require "./software/**"
+
 module Barista
   module Behaviors
     module Software
@@ -9,21 +12,14 @@ module Barista
       end
 
       module Task
+        include GenericCommands
+
         getter :on_output, :on_error, :commands
         @software_source : Fetchers::Net? = nil
         @on_output : Proc(String, Nil) = ->(str : String) { puts str }
         @on_error : Proc(String, Nil) = ->(err : String) { puts err }
   
-        @commands : Array(Commands::Base) = [] of Commands::Base
-
-        # Define the source code to fetch when building this project
-        # 
-        # Currently only supports `Barista::Behaviors::Omnibus::Fetchers::Net`
-        def fetch(url : String, **opts)
-          @software_source = Fetchers::Net.new(url, **opts)
-
-          self
-        end
+        @commands : Array(Barista::Behaviors::Software::Commands::Base) = [] of Barista::Behaviors::Software::Commands::Base
 
         def execute
           build
@@ -31,13 +27,14 @@ module Barista
           commands.map(&.execute)
         end
 
-        # Returns a configured fetcher if one exists.
-        def fetcher : Fetchers::Net?
-          @software_source
-        end
-
         def command(str : String, **args)
           push_command(Commands::Command.new(str, **args)
+            .on_output(&on_output)
+            .on_error(&on_error))
+        end
+
+        def copy(src, dest, **args)
+          push_command(Commands::Copy.new(src, dest, **args)
             .on_output(&on_output)
             .on_error(&on_error))
         end
@@ -50,6 +47,36 @@ module Barista
 
         def sync(src, dest, **args)
           push_command(Commands::Sync.new(src, dest, **args)
+            .on_output(&on_output)
+            .on_error(&on_error))
+        end
+
+        def link(src, dest, **args)
+          push_command(Commands::Link.new(src, dest, **args)
+            .on_output(&on_output)
+            .on_error(&on_error))
+        end
+
+        def mkdir(dir, **args)
+          push_command(Commands::Mkdir.new(dir, **args)
+            .on_output(&on_output)
+            .on_error(&on_error))
+        end
+
+        def patch(path : String, **args)
+          push_command(Commands::Patch.new(path, **args)
+            .on_output(&on_output)
+            .on_error(&on_error))
+        end
+
+        def template(**args)
+          push_command(Commands::Template.new(**args)
+            .on_output(&on_output)
+            .on_error(&on_error))
+        end
+
+        def block(name = nil, &block : ->)
+          push_command(Commands::Block.new(name, &block)
             .on_output(&on_output)
             .on_error(&on_error))
         end
@@ -74,6 +101,7 @@ module Barista
 
         protected def push_command(command : Commands::Base)
           @commands << command
+          command
         end
       end
     end

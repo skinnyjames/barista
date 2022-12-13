@@ -15,7 +15,7 @@ module Barista
           end
 
           def description : String
-            String.new do |io|
+            String.build do |io|
               io << output
               io << is_error
             end

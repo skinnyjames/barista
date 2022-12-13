@@ -14,7 +14,7 @@ module Barista
           def initialize(@src : String, @dest : String, @exclude = [] of String); end
 
           def execute
-            on_output.try(&.call("Merging #{src} to #{dest}"))
+            on_output.try(&.call("Syncing #{src} to #{dest}"))
 
             if s = strategy
               Merger.new(src, dest, exclude: exclude, &s).execute

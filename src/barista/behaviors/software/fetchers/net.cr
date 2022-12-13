@@ -35,7 +35,7 @@ module Barista
         # Assumes that all sources are tar types
         # TODO: Revisit/Rewrite
         class Net
-          include Util::GenericCommands
+          include GenericCommands
           include Verifiable
           COMPRESSED_TAR_EXTENSIONS = %w{.tar.gz .tgz tar.bz2 .tar.xz .txz .tar.lzma}
 
@@ -110,7 +110,7 @@ module Barista
           private def extract(dest_dir, name)
             downloaded_file = download_path(dest_dir)
           
-            mkdir("#{dest_dir}/#{name}", recursive: true)
+            task_mkdir("#{dest_dir}/#{name}", parents: true)
 
             compression_switch = ""
             compression_switch = "-z"        if downloaded_file.ends_with?("gz")

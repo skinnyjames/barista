@@ -5,17 +5,20 @@ module Barista
     getter :build_list, :building, :built
     getter :colors
 
+    getter :on_task_start, :on_task_succeed, :on_task_failed, :on_unblocked
+
     @build_list : Array(String)
-    @constructor : Proc(Barista::Task(T).class, Barista::Task(T))
+    @on_task_start : Proc(String, Nil)?
+    @on_task_succeed : Proc(String, Nil)?
+    @on_task_failed : Proc(String, String, Nil)?
+    @on_unblocked : Proc(Array(String), Nil)?
 
     def initialize(
-      @registry : Barista::Registry(Barista::Task(T).class), 
+      @registry : Barista::Registry(T), 
       *, 
       @workers : Int32 = 1, 
       @filter : Array(String)? = nil,
-      &block : Barista::Task(T).class -> Barista::Task(T)
     )
-      @constructor = block
       @building = [] of String
       @built = [] of String
 
@@ -25,7 +28,23 @@ module Barista
       @build_list = filter ? registry.dag.filter(filter) : registry.dag.nodes.dup
     end
 
-    def build
+    def on_task_start(&block : String -> Nil)
+      @on_task_start = block
+    end
+
+    def on_task_succeed(&block : String -> Nil)
+      @on_task_succeed = block
+    end
+
+    def on_task_failed(&block : String, String -> Nil)
+      @on_task_failed = block
+    end
+
+    def on_unblocked(&block : Array(String) -> Nil)
+      @on_unblocked = block
+    end
+
+    def execute
       # unblocker fiber
       spawn do
         loop do
@@ -48,8 +67,6 @@ module Barista
 
       # initial work fiber
       spawn do
-        Log.info(T.name) { "Worker capacity: #{workers}" }
-
         build_next
       end
 
@@ -73,7 +90,7 @@ module Barista
         end
       end
 
-      Log.info(T.name) { "Unblocked tasks #{tasks}"}
+      on_unblocked.try(&.call(tasks))
 
       tasks.each do |task|
         work(task)
@@ -81,14 +98,17 @@ module Barista
     end
 
     private def work(task)
-      software = @constructor.call(registry[task])
+      software = registry[task]
 
       # build this task async
       spawn do
         begin
         software.execute
+        on_task_succeed.try(&.call(task))
+
         rescue e : Exception
           if exit_on_failure?
+            on_task_failed.try(&.call(task, e.to_s))
             exit 1
           end
         ensure

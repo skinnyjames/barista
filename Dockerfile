@@ -7,6 +7,6 @@ RUN apt update -y && apt install -y \
 WORKDIR /etc/barista
 COPY . /etc/barista
 RUN shards install
-RUN crystal build examples/coffee_shop/coffee_shop.cr
+RUN crystal build examples/coffee_shop.cr
 RUN mv coffee_shop /coffee-shop
 WORKDIR /

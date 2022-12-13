@@ -1,5 +1,4 @@
-require "../../src/barista"
-require "./coffee_shop/**"
+require "../src/barista"
 
 class Coffeeshop < Barista::Project
   include Barista::Behaviors::Omnibus::Project
@@ -67,5 +66,7 @@ class Coffeeshop < Barista::Project
     barista_dir("/opt/barista")
   end
 end
+
+require "./coffee_shop/**"
 
 Coffeeshop.new.console_application.run

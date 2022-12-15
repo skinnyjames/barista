@@ -2,7 +2,7 @@ require "../spec_helper"
 
 private class SoftwareProject < Barista::Project; end
 
-@[Project(SoftwareProject)]
+@[Barista::BelongsTo(SoftwareProject)]
 private class SoftwareTask1 < Barista::Task
   include Barista::Behaviors::Software::Task
   property :foo

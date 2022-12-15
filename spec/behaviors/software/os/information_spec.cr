@@ -4,7 +4,7 @@ private class OSProject < Barista::Project
   include Barista::Behaviors::Software::Project
 end
 
-@[Project(OSProject)]
+@[Barista::BelongsTo(OSProject)]
 private class OSTask < Barista::Task
   include Barista::Behaviors::Software::Task
   def build : Nil

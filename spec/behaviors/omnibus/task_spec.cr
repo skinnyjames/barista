@@ -4,7 +4,7 @@ private class TestProject < Barista::Project
   include Barista::Behaviors::Omnibus::Project
 end
 
-@[Project(TestProject)]
+@[Barista::BelongsTo(TestProject)]
 private class ConfigurableTask < Barista::Task
   include Barista::Behaviors::Omnibus::Task
 

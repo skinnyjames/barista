@@ -3,7 +3,7 @@ require "./spec_helper"
 private class OrchestratorTestProject < Barista::Project
 end
 
-@[Project(OrchestratorTestProject)]
+@[Barista::BelongsTo(OrchestratorTestProject)]
 private class Task1 < Barista::Task
   def initialize(@log : Barista::RichLogger); 
     super()
@@ -16,7 +16,7 @@ private class Task1 < Barista::Task
   end
 end
 
-@[Project(OrchestratorTestProject)]
+@[Barista::BelongsTo(OrchestratorTestProject)]
 private class Task2 < Barista::Task
   def initialize(@log : Barista::RichLogger);  
     super()
@@ -28,7 +28,7 @@ private class Task2 < Barista::Task
   end
 end
 
-@[Project(OrchestratorTestProject)]
+@[Barista::BelongsTo(OrchestratorTestProject)]
 private class Task3 < Barista::Task
   dependency Task2
 

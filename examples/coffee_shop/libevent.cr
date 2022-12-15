@@ -1,4 +1,4 @@
-@[Project(Coffeeshop)]
+@[Barista::BelongsTo(Coffeeshop)]
 class LibEvent < Barista::Task
   include Barista::Behaviors::Omnibus::Task
   

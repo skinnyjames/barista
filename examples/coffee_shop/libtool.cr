@@ -1,4 +1,4 @@
-@[Project(Coffeeshop)]
+@[Barista::BelongsTo(Coffeeshop)]
 class LibTool < Barista::Task
   include Barista::Behaviors::Omnibus::Task
 

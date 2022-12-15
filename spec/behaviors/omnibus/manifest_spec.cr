@@ -8,7 +8,7 @@ private class ManifestProject < Barista::Project
   end
 end
 
-@[Project(ManifestProject)]
+@[Barista::BelongsTo(ManifestProject)]
 private class ManifestTask1 < Barista::Task
   include Barista::Behaviors::Omnibus::Task
 
@@ -28,7 +28,7 @@ private class ManifestTask1 < Barista::Task
   end
 end
 
-@[Project(ManifestProject)]
+@[Barista::BelongsTo(ManifestProject)]
 private class ManifestTask2 < Barista::Task
   include Barista::Behaviors::Omnibus::Task
 

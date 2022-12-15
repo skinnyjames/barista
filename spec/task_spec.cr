@@ -2,12 +2,12 @@ require "./spec_helper"
 
 private class MockProject < Barista::Project; end
 
-@[Project(MockProject)]
+@[Barista::BelongsTo(MockProject)]
 private class Task1 < Barista::Task
   def execute; end
 end
 
-@[Project(MockProject)]
+@[Barista::BelongsTo(MockProject)]
 private class Task2 < Barista::Task
   dependency Task1
   

@@ -1,11 +1,12 @@
 
-annotation Project; end
 module Barista
+  annotation BelongsTo; end
+
   abstract class Task
     abstract def execute
 
     def initialize()
-      {% for ann, idx in @type.annotations(::Project) %}
+      {% for ann, idx in @type.annotations(::Barista::BelongsTo) %}
         {{ ann[0] }}.registry << self
       {% end %}
 
@@ -16,7 +17,7 @@ module Barista
       @@name : String?
       @@dependencies = [] of Barista::Task.class
 
-      {% for ann, idx in @type.annotations(Project) %}
+      {% for ann, idx in @type.annotations(Barista::BelongsTo) %}
         extend Barista::Projectable({{ ann[0] }})
         {{ ann[0] }}.tasks << self
       {% end %}
@@ -44,7 +45,7 @@ module Barista
       def self.belongs_to : Array(Barista::Project.class)
         arr = [] of Barista::Project.class
 
-        {% for ann, idx in @type.annotations(Project) %}
+        {% for ann, idx in @type.annotations(Barista::BelongsTo) %}
           arr << {{ ann[0] }}
         {% end %}
 

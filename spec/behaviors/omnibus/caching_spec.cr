@@ -10,7 +10,7 @@ private class CacheProject < Barista::Project
   end
 end
 
-@[Project(CacheProject)]
+@[Barista::BelongsTo(CacheProject)]
 private class CacheTask1 < Barista::Task
   include Barista::Behaviors::Omnibus::Task
 
@@ -26,7 +26,7 @@ private class CacheTask1 < Barista::Task
   end
 end
 
-@[Project(CacheProject)]
+@[Barista::BelongsTo(CacheProject)]
 private class CacheTask2 < Barista::Task
   include Barista::Behaviors::Omnibus::Task
 

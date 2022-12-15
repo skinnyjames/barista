@@ -12,7 +12,7 @@ private class OmnibusProject < Barista::Project;
   end
 end
 
-@[Project(OmnibusProject)]
+@[Barista::BelongsTo(OmnibusProject)]
 private class OmnibusTask < Barista::Task
   include Barista::Behaviors::Omnibus::Task
   property :foo

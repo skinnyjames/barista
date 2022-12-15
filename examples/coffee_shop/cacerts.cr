@@ -1,4 +1,4 @@
-@[Project(Coffeeshop)]
+@[Barista::BelongsTo(Coffeeshop)]
 class CaCerts < Barista::Task
   include Barista::Behaviors::Omnibus::Task
 

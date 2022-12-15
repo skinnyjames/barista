@@ -1,4 +1,4 @@
-@[Project(Coffeeshop)]
+@[Barista::BelongsTo(Coffeeshop)]
 class OpenSSLTask < Barista::Task
   include Barista::Behaviors::Omnibus::Task
 

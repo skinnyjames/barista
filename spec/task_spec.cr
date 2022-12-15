@@ -19,5 +19,11 @@ module Barista
     it "exposes dependencies" do
       Task2.dependencies.should eq([Task1])
     end
+
+    it "registers instances on #new" do
+      Task2.new
+
+      MockProject.registry.tasks.map(&.name).should eq(["Task2"])
+    end
   end
 end

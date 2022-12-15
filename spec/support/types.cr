@@ -21,6 +21,20 @@ module WithHelpers
    yield graph
   end
 
+  def wait_for(duration : Int32 = 5, *, interval : Float64 = 0.5, &block : -> Bool)
+    time = Time.local
+    while (Time.local - time).seconds < duration
+      begin
+        result = yield
+        return if result
+        sleep interval
+      rescue ex : Exception
+        sleep interval
+      end
+    end
+    raise Exception.new("timed out after #{duration}")
+  end
+
   def io
     io = IO::Memory.new
     multi = IO::MultiWriter.new(io, STDOUT)
@@ -31,5 +45,7 @@ module WithHelpers
     io, multi = io
     Barista::Log.backend(Log::IOBackend.new(multi))
     yield(io)
+  ensure
+    Barista::Log.backend(Log::IOBackend.new(STDOUT))
   end
 end

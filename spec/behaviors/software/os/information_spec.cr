@@ -1,0 +1,54 @@
+require "../../../spec_helper"
+
+private class OSProject < Barista::Project
+  include Barista::Behaviors::Software::Project
+end
+
+@[Project(OSProject)]
+private class OSTask < Barista::Task
+  include Barista::Behaviors::Software::Task
+  def build : Nil
+    emit("PLATFORM=#{platform.name}")
+    emit("PLATFORM_VERSION=#{platform.version}")
+    emit("PLATFORM_FAMILY=#{platform.family}")
+    emit("CPUS=#{memory.cpus}")
+  end
+end
+
+module Barista::Behaviors::Software::OS
+  describe "Information" do
+    it "provides os specific information" do
+      project = OSProject.new
+      task = OSTask.new
+
+      log = [] of String
+
+      task.on_output do |str|
+        log << str
+      end
+
+      {% if flag?(:linux) %}
+        [project, task].each do |p|
+          p.platform.should be_a(Barista::Behaviors::Software::OS::Linux::Platform)
+          p.memory.should be_a(Barista::Behaviors::Software::OS::Linux::Memory)
+        end
+      {% elsif flag?(:darwin) %}
+        [project, task].each do |p|
+          p.platform.should be_a(Barista::Behaviors::Software::OS::Darwin::Platform)
+          p.memory.should be_a(Barista::Behaviors::Software::OS::Darwin::Memory)
+        end
+      {% end %}
+
+      task.execute
+        
+      wait_for do
+        log.size == 4
+      end
+
+      log[0].should match(/PLATFORM=\w+/)
+      log[1].should match(/PLATFORM_VERSION=\w+/)
+      log[2].should match(/PLATFORM_FAMILY=\w+/)
+      log[3].should match(/CPUS=\d+/)
+    end
+  end
+end

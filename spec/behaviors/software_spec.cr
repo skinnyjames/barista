@@ -9,9 +9,7 @@ private class SoftwareTask1 < Barista::Task
 
   @foo = "bar"
 
-  def build : Nil
-
-  end
+  def build : Nil; end
 end
 
 module Barista

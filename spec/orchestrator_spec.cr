@@ -11,7 +11,7 @@ private class Task1 < Barista::Task
   getter :log
 
   def execute
-    sleep 1
+    sleep 0.2
     log.info { "task1" }
   end
 end
@@ -47,8 +47,6 @@ describe Barista::Orchestrator do
   it "executes the tasks in a project" do
     colors = Barista::ColorIterator.new
     project = OrchestratorTestProject.new
-
-    puts project.tasks
 
     project.tasks.each do |task|
       task.new(::Barista::RichLogger.new(colors.next, task.name))

@@ -7,6 +7,7 @@ module Barista
   abstract class Project
     macro inherited
       @application : ACON::Application?
+      @@name : String? = nil
       @@tasks = [] of Barista::Projectable({{ @type.id }})
       @@registry = Barista::Registry(Barista::Task).new
 
@@ -28,6 +29,10 @@ module Barista
 
       def tasks
         self.class.tasks
+      end
+      
+      def name
+        @@name || self.class.name
       end
 
       def console_application : ACON::Application

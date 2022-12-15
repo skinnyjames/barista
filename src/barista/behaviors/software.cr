@@ -4,7 +4,9 @@ require "./software/**"
 module Barista
   module Behaviors
     module Software
-      module Project; 
+      module Project;
+        include OS::Information
+        
         def console_application
           app = super
           
@@ -13,6 +15,7 @@ module Barista
 
       module Task
         include GenericCommands
+        include OS::Information
 
         getter :on_output, :on_error, :commands
         @software_source : Fetchers::Net? = nil

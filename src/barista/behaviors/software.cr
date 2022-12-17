@@ -6,6 +6,7 @@ module Barista
     module Software
       module Project
         include OS::Information
+        include GenericCommands
         
         def console_application
           app = super

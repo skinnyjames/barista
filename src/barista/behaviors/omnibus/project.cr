@@ -66,7 +66,7 @@ module Barista
           registry.tasks
         end
 
-        def packager : Packager
+        def packager : Packagers::Base
           @packager ||= Packager.discover(self)
         end
 

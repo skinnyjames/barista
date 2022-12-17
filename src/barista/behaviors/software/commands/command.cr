@@ -12,13 +12,13 @@ module Barista
             
             spawn do
               while line = process.output.gets
-                try_out(line)
+                on_output.call(line)
               end
             end
     
             spawn do
               while line = process.error.gets
-                try_error(line)
+                on_error.call(line)
               end
             end
     
@@ -32,18 +32,6 @@ module Barista
               io << command
               io << chdir
               env.to_s(io) if env
-            end
-          end
-
-          protected def try_out(string : String)
-            on_output.try do |output|
-              output.call(string)
-            end
-          end
-
-          protected def try_error(string : String)
-            on_error.try do |error|
-              error.call(string)
             end
           end
         end

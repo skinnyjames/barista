@@ -157,10 +157,9 @@ module Barista
             on_output.call("RUNNING: #{command}")
 
             Software::Commands::Command.new(command)
-              .on_output { |s| on_output.call(s) }
-              .on_error { |s| on_error.call(s) }
+              .forward_output(&on_output)
+              .forward_error(&on_error)
               .execute
-
 
             Dir.glob(File.join(prepare_dir, "RPMS", "**", "*.rpm")).each do |file|
               Dir.cd(File.dirname(file)) do
@@ -171,9 +170,9 @@ module Barista
 
           protected def render_template(str, variables, destination : String, mode : File::Permissions = File::Permissions.new(0o755))
             Software::Commands::Template.new(src: str, dest: destination, mode: mode, vars: variables, string: true)
-                    .on_output { |str| on_output.call(str) }
-                    .on_error { |str| on_error.call(str) }
-                    .execute
+              .forward_output(&on_output)
+              .forward_error(&on_error)
+              .execute
           end
 
           def summary
@@ -231,16 +230,16 @@ module Barista
           def query
             path = File.join(project.package_dir, package_name)
             Software::Commands::Command.new("rpm -qip #{path}")
-              .on_output { |s| on_output.call(s) }
-              .on_error { |s| on_error.call(s) }
+              .forward_output(&on_output)
+              .forward_error(&on_error)
               .execute
           end
 
           def list_files
             path = File.join(project.package_dir, package_name)
             Software::Commands::Command.new("rpm -qlp #{path}")
-              .on_output { |s| on_output.call(s) }
-              .on_error { |s| on_error.call(s) }
+              .forward_output(&on_output)
+              .forward_error(&on_error)
               .execute
           end
 

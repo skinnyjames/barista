@@ -29,21 +29,16 @@ module Barista
           end
 
           private def run_command(cmd) : String
-            output = nil
-            error = nil
+            output = [] of String
+            error = [] of String
             command = Commands::Command.new(cmd)
-            command.on_output do |str|
-              output = str
-            end
+              .collect_output(output)
+              .collect_error(error)
+              .execute
 
-            command.on_error do |str|
-              error = str
-            end
+            raise Exception.new("Failed to run #{cmd}: #{error}") unless error.empty?
 
-            command.execute
-            raise Exception.new("Failed to run #{cmd}: #{error}") unless error.nil?
-
-            if o = output
+            if o = output.last
               o.strip
             else
               raise Exception.new("No output for #{cmd}")

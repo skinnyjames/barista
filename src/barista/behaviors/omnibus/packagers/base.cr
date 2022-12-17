@@ -10,7 +10,7 @@ module Barista
 
           @prepare_dir : String?
 
-          getter :project, :on_output, :on_error
+          getter :project
 
           delegate(:install_dir, to: @project)
 
@@ -92,8 +92,8 @@ module Barista
 
               begin
                 Software::Commands::Command.new({{ cmd }})
-                  .on_output { |s| o << s }
-                  .on_error { |s| o << s }
+                  .collect_output(o)
+                  .collect_error(o)
                   .execute
 
                 not_supported = o.any? { |l| Regex.new({{ regex_test.stringify }}).matches?(l) }

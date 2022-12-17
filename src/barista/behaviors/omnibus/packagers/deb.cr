@@ -171,16 +171,16 @@ module Barista
           def query
             path = File.join(project.package_dir, package_name)
             Software::Commands::Command.new("dpkg-deb -I #{path}")
-              .on_output { |s| on_output.call(s) }
-              .on_error { |s| on_error.call(s) }
+              .forward_output(&on_output)
+              .forward_error(&on_error)
               .execute
           end
 
           def list_files
             path = File.join(project.package_dir, package_name)
             Software::Commands::Command.new("dpkg -c #{path}")
-              .on_output { |s| on_output.call(s) }
-              .on_error { |s| on_error.call(s) }
+              .forward_output(&on_output)
+              .forward_error(&on_error)
               .execute
           end
   

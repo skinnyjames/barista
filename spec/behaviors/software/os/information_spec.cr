@@ -18,14 +18,11 @@ end
 module Barista::Behaviors::Software::OS
   describe "Information" do
     it "provides os specific information" do
-      project = OSProject.new
-      task = OSTask.new
-
       log = [] of String
 
-      task.on_output do |str|
-        log << str
-      end
+      project = OSProject.new
+      task = OSTask.new
+              .collect_output(log)
 
       {% if flag?(:linux) %}
         [project, task].each do |p|

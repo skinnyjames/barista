@@ -16,6 +16,26 @@ module Barista
           @on_error = block
           self
         end
+
+        def forward_output(&block : String ->)
+          @on_output = ->(str : String) { block.call(str) }
+          self
+        end
+
+        def forward_error(&block : String ->)
+          @on_error = ->(str : String) { block.call(str) }
+          self
+        end
+
+        def collect_output(arr : Array(String))
+          @on_output = ->(str : String) { arr << str }
+          self
+        end
+
+        def collect_error(arr : Array(String))
+          @on_error = ->(str : String) { arr << str}
+          self
+        end
       end
     end
   end

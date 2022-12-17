@@ -14,7 +14,10 @@ module Barista
             template = string ? src : File.read(src)
             rendered = Crinja.render(template, vars)
             
-            Commands::Mkdir.new(File.dirname(dest), parents: true).execute
+            Commands::Mkdir.new(File.dirname(dest), parents: true)
+              .forward_output(&on_output)
+              .forward_error(&on_error)
+              .execute
 
             File.write(dest, rendered, perm: mode)
           end

@@ -24,12 +24,6 @@ module Barista
             File.write(dest, rendered, perm: mode)
           end
 
-          private def empty_test
-            Crinja.test do
-              return nilif test.empty?
-            end
-          end
-
           def crinja
             Crinja.new(config)
           end

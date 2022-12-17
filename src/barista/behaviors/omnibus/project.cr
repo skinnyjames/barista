@@ -6,6 +6,8 @@ module Barista
         include Software::OS::Information
         include Software::GenericCommands
 
+        @packager : Packager?
+
         gen_method(:install_dir, String) { missing_attribute("install_dir") }
         gen_method(:barista_dir, String) { missing_attribute("barista_dir") }
         gen_method(:build_version, String) { missing_attribute("build_version") }
@@ -64,8 +66,8 @@ module Barista
           registry.tasks
         end
 
-        def packager
-          Packager.discover(self)
+        def packager : Packager
+          @packager ||= Packager.discover(self)
         end
 
         def package

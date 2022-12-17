@@ -161,10 +161,12 @@ module Barista
               .forward_error(&on_error)
               .execute
 
-            Dir.glob(File.join(prepare_dir, "RPMS", "**", "*.rpm")).each do |file|
-              Dir.cd(File.dirname(file)) do
-                Software::Commands::Copy.new(File.basename(file), project.package_dir).execute
+            begin
+              Dir.glob(File.join(prepare_dir, "RPMS", "**", "*.rpm")).each do |file|
+                Software::Commands::Copy.new(file, project.package_dir).execute
               end
+            rescue ex 
+              on_error.call("error on syncing rpm to package dir: #{ex}")
             end
           end
 

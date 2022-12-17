@@ -80,12 +80,6 @@ module Barista
             .forward_error(&on_error))
         end
 
-        def eager_template(**args)
-          push_command(Commands::EagerTemplate.new(**args)
-            .forward_output(&on_output)
-            .forward_error(&on_error))
-        end
-
         def template(**args)
           push_command(Commands::Template.new(**args)
             .forward_output(&on_output)

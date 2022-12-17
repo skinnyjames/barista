@@ -1,0 +1,20 @@
+Package: {{ name }}
+Version: {{ version }}-{{ iteration }}
+License: {{ license }}
+Vendor: {{ vendor }}
+Architecture: {{ architecture }}
+Maintainer: {{ maintainer }}
+Installed-Size: {{ installed_size }}
+{% if dependencies[0] is defined %}
+Depends: {{ dependencies | join(", ") }}
+{% endif %}
+{% if conflicts[0] is defined %}
+Conflicts: {{ conflicts | join(", ") }}
+{% endif %}
+{% if replaces[0] is defined %}
+Replaces: {{ replaces | join(", ") }}
+{% endif %}
+Section: {{ section }}
+Priority: {{ priority }}
+Homepage: {{ homepage }}
+Description: {{ description }}

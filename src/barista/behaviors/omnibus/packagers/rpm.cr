@@ -122,7 +122,7 @@ module Barista
                 "vendor" => vendor,
                 "license" => license,
                 "summary" => summary,
-                "dist_tag" => dist_tag,
+                "dist_tag" => "#{dist_tag}\n",
                 "maintainer" => project.maintainer,
                 "homepage" => project.homepage,
                 "description" => project.description,

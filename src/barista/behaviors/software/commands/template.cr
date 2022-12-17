@@ -6,13 +6,15 @@ module Barista
     module Software
       module Commands
         class Template < Base          
-          getter :src, :dest, :vars, :mode, :string
+          getter :src, :dest, :vars, :mode, :string, :config
 
-          def initialize(*, @dest : String, @src : String, @mode : File::Permissions, @vars : Hash(String, String) | Hash(String, Crinja::Value), @string : Bool = false); end
+          def initialize(*, @dest : String, @src : String, @mode : File::Permissions, @vars : Hash(String, String) | Hash(String, Crinja::Value), @string : Bool = false)
+            @config = Crinja::Config.new(trim_blocks: true, lstrip_blocks: false, keep_trailing_newline: true)
+          end
 
           def execute
             template = string ? src : File.read(src)
-            rendered = Crinja.render(template, vars)
+            rendered = crinja.from_string(template).render(vars)
             
             Commands::Mkdir.new(File.dirname(dest), parents: true)
               .forward_output(&on_output)
@@ -20,6 +22,16 @@ module Barista
               .execute
 
             File.write(dest, rendered, perm: mode)
+          end
+
+          private def empty_test
+            Crinja.test do
+              return nilif test.empty?
+            end
+          end
+
+          def crinja
+            Crinja.new(config)
           end
     
           def description : String

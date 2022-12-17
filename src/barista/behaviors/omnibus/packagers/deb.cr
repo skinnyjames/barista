@@ -5,6 +5,8 @@ module Barista
     module Omnibus
       module Packagers
         class Deb < Base
+          CONTROL_TEMPLATE = Barista.project_file("/behaviors/omnibus/packagers/scripts/deb/control.hbs")
+
           delegate(:license, to: @project)
 
           gen_supported("which dpkg-deb", /no dpkg-deb/)
@@ -34,31 +36,31 @@ module Barista
           end
 
           def write_control_file
-            File.open(File.join(debian_dir, "control"), "w") do |fh|
-              fh.puts "Package: #{safe_package_name}"
-              fh.puts "Version: #{safe_version}-#{project.build_iteration}"
-              fh.puts "License: #{license}"
-              fh.puts "Architecture: #{safe_architecture}"
-              fh.puts "Maintainer: #{project.maintainer}"
-              fh.puts "Installed-Size: #{package_size}"
-  
-              unless project.runtime_dependencies.empty?
-                fh.puts "Depends: #{project.runtime_dependencies.join(", ")}"
-              end
-  
-              unless project.conflicts.empty?
-                fh.puts "Conflicts: #{project.conflicts.join(", ")}"
-              end
-  
-              unless project.replaces.empty?
-                fh.puts "Replaces: #{project.replaces.join(", ")}"
-              end
-  
-              fh.puts "Section: #{section}"
-              fh.puts "Priority: #{priority}"
-              fh.puts "Homepage: #{project.homepage}"
-              fh.puts "Description: #{clean_description}"
-            end
+            Software::Commands::Template.new(
+              src: CONTROL_TEMPLATE, 
+              dest: File.join(debian_dir, "control"),
+              mode: File::Permissions.new(0o755),
+              vars: Crinja.variables({
+                "name" => safe_package_name,
+                "version" => safe_version,
+                "iteration" => project.build_iteration,
+                "license" => license,
+                "architecture" => safe_architecture,
+                "maintainer" => project.maintainer,
+                "installed_size" => package_size.to_s,
+                "dependencies" => project.runtime_dependencies,
+                "conflicts" => project.conflicts,
+                "replaces" => project.replaces,
+                "section" => section,
+                "priority" => priority,
+                "homepage" => project.homepage,
+                "description" => clean_description
+              }),
+              string: true
+            )
+            .forward_output(&on_output)
+            .forward_error(&on_error)
+            .execute
           end
 
           def write_conffiles_file
@@ -118,7 +120,7 @@ module Barista
             clean = rest.map do |line|
               line =~ /^ *$/ ? " ." : " #{line}"
             end.join("\n")
-  
+
             "#{first}\n#{clean}"
           end
 

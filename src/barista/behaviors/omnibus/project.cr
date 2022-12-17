@@ -6,7 +6,7 @@ module Barista
         include Software::OS::Information
         include Software::GenericCommands
 
-        @packager : Packager?
+        @packager : Packagers::Base?
 
         gen_method(:install_dir, String) { missing_attribute("install_dir") }
         gen_method(:barista_dir, String) { missing_attribute("barista_dir") }

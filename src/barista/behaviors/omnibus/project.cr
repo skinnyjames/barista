@@ -3,6 +3,8 @@ module Barista
     module Omnibus
       module Project
         include Macros
+        include Software::OS::Information
+
         gen_method(:install_dir, String) { missing_attribute("install_dir") }
         gen_method(:barista_dir, String) { missing_attribute("barista_dir") }
         gen_method(:build_version, String) { missing_attribute("build_version") }
@@ -13,21 +15,22 @@ module Barista
         gen_method(:homepage, String) { missing_attribute("homepage") }
         gen_method(:license, String) { "Unspecified" }
         gen_method(:package_name, String) { name }
-        gen_method(:package_dir, String) { File.join(barista_dir, "pkg") }
+        gen_method(:package_dir, String) { File.join(barista_dir, "package") }
         gen_method(:maintainer, String) { missing_attribute("maintainer") }
         gen_method(:package_user, String) { "root" }
         gen_method(:package_group, String) { "root" }
-        gen_method(:package_scripts_path, String) { File.join(barista_dir, "package-scripts", name) }
+        gen_method(:package_scripts_path, String) { File.join(barista_dir, "package_scripts", name) }
         gen_method(:resources_path, String) { File.join(barista_dir, "resources") }
+        gen_method(:package_name, String) { name }
 
         BUILD_GIT_REVISION = {{ `git rev-parse HEAD`.stringify }}.strip
 
-        @exclusions : Array(String) = [] of String
-
-        def exclude(val : String)
-          @exclusions << val
-          @exclusions.dup
-        end
+        gen_collection_method(:exclude, :exclusions, String)
+        gen_collection_method(:runtime_dependency, :runtime_dependencies, String)
+        gen_collection_method(:conflict, :conflicts, String)
+        gen_collection_method(:replace, :replaces, String)
+        gen_collection_method(:config_file, :config_files, String)
+        gen_collection_method(:extra_package_file, :extra_package_files, String)
 
         def clean
           Dir.cd(install_dir) { FileUtils.rm_r(Dir.children(".")) }
@@ -52,6 +55,29 @@ module Barista
 
         def tasks : Barista::Behaviors::Omnibus::Task
           registry.tasks
+        end
+
+        def package
+          Packager.discover(self).run
+        end
+
+        def validate_package_fields
+          install_dir
+          homepage
+          license
+          build_version
+          build_iteration
+          description
+          homepage
+          license
+          package_name
+          package_dir
+          maintainer
+          package_user
+          package_group
+          package_scripts_path
+          package_name
+          barista_dir
         end
 
         protected def shasum : String

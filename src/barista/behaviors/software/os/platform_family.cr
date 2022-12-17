@@ -3,6 +3,16 @@ module Barista
     module Software
       module OS
         module PlatformFamily
+          def platform_short_name
+            if rhel?
+              "el"
+            elsif suse?
+              "sles"
+            else
+              platform.family
+            end
+          end
+
           def arch?
             platform.family == "arch"
           end

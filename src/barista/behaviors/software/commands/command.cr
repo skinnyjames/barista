@@ -8,8 +8,6 @@ module Barista
           def initialize(@command : String, *, @chdir : String? = nil, @env : Hash(String, String)? = nil); end
 
           def execute
-            try_out("Starting command: #{command}")
-
             process = Process.new(command, chdir: chdir, shell: true, env: env, output: :pipe, error: :pipe)
             
             spawn do
@@ -25,8 +23,6 @@ module Barista
             end
     
             status = process.wait
-            try_out("Command exited with #{status.exit_code}")
-
             # raise error if status code isn't 0
             raise CommandError.new("Command failed with exit #{status.exit_code}") unless status.success?
           end

@@ -12,15 +12,16 @@ module Barista
       #
       # return `false` to skip this file copy
       struct Merger
-        getter :source, :destination, :strategy, :exclude
+        getter :source, :destination, :strategy, :exclude, :always_check
 
         alias Strategy = Proc(String, String, Bool)
 
-        def initialize(@source : String, @destination : String, @exclude = [] of String, &block : Merger::Strategy);
+        def initialize(@source : String, @destination : String, @exclude = [] of String, @always_check : Bool = false, &block : Merger::Strategy);
           @strategy = block
         end
 
         def initialize(@source : String, @destination : String, @exclude = [] of String)
+          @always_check = false
           @strategy = nil
         end
 
@@ -40,7 +41,7 @@ module Barista
 
             # allow skipping of sync with block
             proc = strategy
-            if proc && File.exists?(target)
+            if proc && (always_check || File.exists?(target))
               do_write = proc.call(file_path, target)
               next unless do_write
             end

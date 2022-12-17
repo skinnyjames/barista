@@ -50,5 +50,16 @@ module Barista::Behaviors::Software::OS
       log[2].should match(/PLATFORM_FAMILY=\w+/)
       log[3].should match(/CPUS=\d+/)
     end
+
+    it "provides kernel info" do
+      project = OSProject.new
+      task = OSTask.new
+
+      project.kernel.name.should_not eq(nil)
+      project.kernel.version.should_not eq(nil)
+      project.kernel.machine.should_not eq(nil)
+      project.kernel.release.should_not eq(nil)
+      project.kernel.processor.should_not eq(nil)
+    end
   end
 end

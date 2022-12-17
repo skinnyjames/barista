@@ -4,7 +4,7 @@ require "./software/**"
 module Barista
   module Behaviors
     module Software
-      module Project;
+      module Project
         include OS::Information
         
         def console_application
@@ -16,18 +16,26 @@ module Barista
       module Task
         include GenericCommands
         include OS::Information
+        include Emittable
 
-        getter :on_output, :on_error, :commands
+        @@files = {} of String => String
+
+        macro file(key, path)
+          @@files[{{key}}] = {{ read_file(path) }}
+        end
+
+        getter :on_output, :commands
         @software_source : Fetchers::Net? = nil
-        @on_output : Proc(String, Nil) = ->(str : String) { puts str }
-        @on_error : Proc(String, Nil) = ->(err : String) { puts err }
-  
         @commands : Array(Barista::Behaviors::Software::Commands::Base) = [] of Barista::Behaviors::Software::Commands::Base
 
         def execute
           build
 
           commands.map(&.execute)
+        end
+
+        def file(key : String)
+          @@files[key]
         end
 
         def command(str : String, **args)
@@ -72,6 +80,12 @@ module Barista
             .on_error(&on_error))
         end
 
+        def eager_template(**args)
+          push_command(Commands::EagerTemplate.new(**args)
+            .on_output(&on_output)
+            .on_error(&on_error))
+        end
+
         def template(**args)
           push_command(Commands::Template.new(**args)
             .on_output(&on_output)
@@ -90,14 +104,6 @@ module Barista
 
         def emit_error(str : String)
           push_command(Commands::Emit.new(str, is_error: true).on_error(&on_error))
-        end
-
-        def on_output(&block : String -> Nil)
-          @on_output = block
-        end
-
-        def on_error(&block : String -> Nil)
-          @on_error = block
         end
 
         abstract def build : Nil

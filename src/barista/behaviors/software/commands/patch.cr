@@ -11,14 +11,10 @@ module Barista
     
           def execute
             cmd = "patch -p#{plevel} -i #{patch_file}"
-            c = Command.new(cmd, chdir: chdir, env: env)
-            if o = on_output
-              c.on_output(&o)
-            end
-            if e = on_error
-              c.on_error(&e)
-            end
-            c.execute
+            Command.new(cmd, chdir: chdir, env: env)
+              .forward_output(&on_output)
+              .forward_error(&on_error)
+              .execute
           end
     
           protected def filepath

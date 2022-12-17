@@ -48,4 +48,10 @@ module WithHelpers
   ensure
     Barista::Log.backend(Log::IOBackend.new(STDOUT))
   end
+
+  def with_packager(packager)
+    yield packager
+  ensure 
+    packager.cleanup
+  end
 end

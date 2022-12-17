@@ -8,9 +8,9 @@ module Barista
 
           def execute
             if is_error
-              on_error.try(&.call(output))
+              on_error.call(output)
             else
-              on_output.try(&.call(output))
+              on_output.call(output)
             end
           end
 

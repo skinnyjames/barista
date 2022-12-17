@@ -14,5 +14,19 @@ module Barista::Behaviors::Software::Commands
 
       File.read(File.join(downloads_path, "test")).should eq("Hello world!")
     end
+
+    it "Processes a string" do
+      cmd = Template.new(
+        src: "Hello {{ value }}!",
+        dest: File.join(downloads_path, "test"),
+        mode: File::Permissions.new(0o755),
+        vars: { "value" => "world" },
+        string: true
+      )
+
+      cmd.execute
+
+      File.read(File.join(downloads_path, "test")).should eq("Hello world!")
+    end
   end
 end

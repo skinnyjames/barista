@@ -1,0 +1,68 @@
+# Disable any shell actions, replace them with simply 'true'
+%define __spec_prep_post true
+%define __spec_prep_pre true
+%define __spec_build_post true
+%define __spec_build_pre true
+%define __spec_install_post true
+%define __spec_install_pre true
+%define __spec_clean_post true
+%define __spec_clean_pre true
+
+# Use SHA256 checksums for all files
+%define _binary_filedigest_algorithm 8
+
+%define _binary_payload {{ compression }}
+
+# Disable creation of build-id links
+%define _build_id_links none
+
+# Metadata
+Name: {{ name }}
+Version: {{ version }}
+Release: {{ iteration }}{% if dist_tag %}{{ dist_tag }}{% endif %}
+Summary:  {{ summary }}
+AutoReqProv: no
+BuildRoot: %buildroot
+Prefix: /
+Group: {{ category }}
+License: {{ license }}
+Vendor: {{ vendor }}
+URL: {{ homepage }}
+Packager: {{ maintainer }}
+{% for name in dependencies %}
+Requires: {{ name }}
+{% endfor %}
+{% for name in conflics %}
+Conflicts: {{ name }}
+{% endfor %}
+{% for name in replaces %}
+Obsoletes: {{ name }}
+{% endfor %}
+%description
+{{ safe_description }}
+
+%prep
+# noop
+
+%build
+# noop
+
+%install
+# noop
+
+%clean
+# noopS
+
+{% for name, contents in scripts %}
+%{{ name }}
+{{ contents}}
+{% endfor %}
+
+%files
+%defattr(-,{{ user }},{{ group }},-)
+{% for file in config_files %}
+%config(noreplace) {{ file }}
+{% endfor %}
+{% for file in files %}
+{{ file }}
+{% endfor %}

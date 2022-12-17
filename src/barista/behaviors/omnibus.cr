@@ -18,6 +18,17 @@ module Barista
           end
         end
 
+        macro gen_collection_method(name, var_name, type)
+          getter {{ var_name.id }}
+
+          @{{ var_name.id }} = [] of {{ type }}
+
+          def {{ name.id }}(val : {{ type.id }})
+            @{{ var_name.id }} << val
+            @{{ var_name.id }}.dup
+          end
+        end
+
         private def missing_attribute(attribute)
           raise MissingRequiredAttribute.new("#{self.class.name} is missing project attribute `#{attribute}`")
         end

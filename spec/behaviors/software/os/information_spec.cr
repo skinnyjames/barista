@@ -18,14 +18,11 @@ end
 module Barista::Behaviors::Software::OS
   describe "Information" do
     it "provides os specific information" do
-      project = OSProject.new
-      task = OSTask.new
-
       log = [] of String
 
-      task.on_output do |str|
-        log << str
-      end
+      project = OSProject.new
+      task = OSTask.new
+              .collect_output(log)
 
       {% if flag?(:linux) %}
         [project, task].each do |p|
@@ -49,6 +46,17 @@ module Barista::Behaviors::Software::OS
       log[1].should match(/PLATFORM_VERSION=\w+/)
       log[2].should match(/PLATFORM_FAMILY=\w+/)
       log[3].should match(/CPUS=\d+/)
+    end
+
+    it "provides kernel info" do
+      project = OSProject.new
+      task = OSTask.new
+
+      project.kernel.name.should_not eq(nil)
+      project.kernel.version.should_not eq(nil)
+      project.kernel.machine.should_not eq(nil)
+      project.kernel.release.should_not eq(nil)
+      project.kernel.processor.should_not eq(nil)
     end
   end
 end

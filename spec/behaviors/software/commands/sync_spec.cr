@@ -3,14 +3,10 @@ require "../../../spec_helper"
 module Barista::Behaviors::Software::Commands
   describe "Sync" do
     it "Syncs from <src> to <dest>" do
-      cmd = Sync.new(File.join(fixtures_path, "commands"), File.join(downloads_path, "commands"))
       output = [] of String
-
-      cmd.on_output do |str|
-        output << str
-      end
-
-      cmd.execute
+      cmd = Sync.new(File.join(fixtures_path, "commands"), File.join(downloads_path, "commands"))
+              .collect_output(output)
+              .execute
 
       output.join(" ").should match(/Syncing/)
       File.read(File.join(downloads_path, "commands", "command.txt")).should match(/hello world/)

@@ -12,6 +12,10 @@ module Barista
         private def task_remove_contents(directory : String)
           FileUtils.rm_rf(Dir.children(directory)) if Dir.exists?(directory)
         end
+
+        private def task_rmdir(directory : String)
+          FileUtils.rm_rf(directory) if Dir.exists?(directory)
+        end
       end
     end
   end

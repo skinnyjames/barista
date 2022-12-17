@@ -7,6 +7,8 @@ private class SoftwareTask1 < Barista::Task
   include Barista::Behaviors::Software::Task
   property :foo
 
+  file("tpl", "#{__DIR__}/../support/fixtures/templates/test.tpl")
+
   @foo = "bar"
 
   def build : Nil; end
@@ -38,6 +40,11 @@ module Barista
             Commands::Patch,
             Commands::Template
           ])
+        end
+
+        it "keeps a registry of files" do
+          task = SoftwareTask1.new
+          task.file("tpl").should eq("Hello {{ value }}!")
         end
       end
     end

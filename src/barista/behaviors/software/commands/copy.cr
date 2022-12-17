@@ -8,27 +8,12 @@ module Barista
           def initialize(@src : String, @dest : String, @chdir : String? = nil, @env : Hash(String, String)? = nil); end
     
           def execute
-            if File.directory?(src)
-              c = Command.new("cp -R #{src} #{dest}", chdir: chdir, env: env)
-              if o = on_output
-                c.on_output(&o)
-              end
+            cmd = File.directory?(src) ? "cp -R #{src} #{dest}" : "cp #{src} #{dest}"
 
-              if e = on_error
-                c.on_error(&e)
-              end
-            else
-              c = Command.new("cp #{src} #{dest}", chdir: chdir, env: env)
-              if o = on_output
-                c.on_output(&o)
-              end
-
-              if e = on_error
-                c.on_error(&e)
-              end
-            end
-            
-            c.execute
+            Command.new(cmd, chdir: chdir, env: env)
+              .forward_output(&on_output)
+              .forward_error(&on_error)
+              .execute
           end
     
           def description : String

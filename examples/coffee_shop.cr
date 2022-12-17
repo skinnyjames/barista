@@ -3,21 +3,22 @@ require "../src/barista"
 class Coffeeshop < Barista::Project
   include Barista::Behaviors::Omnibus::Project
 
-  getter :workers
-
-  def install_dir
-    "/opt/coffeeshop"
-  end
-  
-  def barista_dir
-    "/opt/barista"
+  def initialize
+    install_dir("/opt/coffeeshop")
+    barista_dir("/opt/barista")
+    maintainer("Sean Gregory")
+    homepage("https://gitlab.com/skinnyjames/barista")
+    build_version("1.2.3")
+    license("MIT")
+    package_name("coffeeshop-example")
+    description("An example project using Barista")
   end
 
   def dry_run
     tasks.each(&.new(self))
   end 
 
-  def build(@workers : Int32 = 4, filter : Array(String)? = nil)  : Nil
+  def build(workers : Int32 = 4, filter : Array(String)? = nil)  : Nil
     colors = Barista::ColorIterator.new
   
     tasks.each do |task_klass|
@@ -53,17 +54,14 @@ class Coffeeshop < Barista::Project
     end
 
     orchestrator.execute
+
+    package
   end
 
   def console_application
     app = previous_def
     app.add(Build.new(self))
     app
-  end
-
-  def configure
-    install_dir("/opt/coffeeshop")
-    barista_dir("/opt/barista")
   end
 end
 

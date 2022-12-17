@@ -4,6 +4,7 @@ module Barista
       module Project
         include Macros
         include Software::OS::Information
+        include Software::GenericCommands
 
         gen_method(:install_dir, String) { missing_attribute("install_dir") }
         gen_method(:barista_dir, String) { missing_attribute("barista_dir") }

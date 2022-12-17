@@ -36,6 +36,12 @@ module Barista
           Dir.cd(install_dir) { FileUtils.rm_r(Dir.children(".")) }
           Dir.cd(barista_dir) { FileUtils.rm_r(Dir.children(".")) }
         end
+
+        def clean!
+          clean
+          task_rmdir(install_dir)
+          task_rmdir(barista_dir)
+        end
         
         def manifest_json
           Manifest.new(self).to_json
@@ -57,8 +63,12 @@ module Barista
           registry.tasks
         end
 
+        def packager
+          Packager.discover(self)
+        end
+
         def package
-          Packager.discover(self).run
+          packager.run
         end
 
         def validate_package_fields

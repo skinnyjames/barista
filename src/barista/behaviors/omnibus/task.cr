@@ -133,7 +133,7 @@ module Barista
 
         def bin(exe, command, **args)
           binary = File.join(install_dir, "embedded", "bin", exe)
-          commmand("#{binary} #{command}", **args)
+          command("#{binary} #{command}", **args)
         end
 
         def sync(src, dest, exclusions = [] of String, **args, &block)

@@ -136,7 +136,7 @@ module Barista
           command("#{binary} #{command}", **args)
         end
 
-        def sync(src, dest, exclude = [] of String, **args, &block)
+        def sync(src, dest, exclude = [] of String, **args, &block : Software::Merger::Strategy)
           if Path[src].absolute?
             source = src
             exclusions = exclude

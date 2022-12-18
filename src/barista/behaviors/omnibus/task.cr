@@ -131,6 +131,11 @@ module Barista
           super(src, dest, **args.merge(chdir: chdir))
         end
 
+        def bin(exe, command, **args)
+          binary = File.join(install_dir, "embedded", "bin", exe)
+          commmand("#{binary} #{command}", **args)
+        end
+
         def sync(src, dest, exclusions = [] of String, **args, &block)
           if Path[src].absolute?
             source = src

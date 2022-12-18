@@ -136,7 +136,7 @@ module Barista
           command("#{binary} #{command}", **args)
         end
 
-        def sync(src, dest, exclusions = [] of String, **args, &block)
+        def sync(src, dest, exclude = [] of String, **args, &block)
           if Path[src].absolute?
             source = src
             exclusions = exclude
@@ -145,10 +145,10 @@ module Barista
             exclusions = exclude.map { |e| File.join(source_dir, e) }
           end
     
-          super(source, dest, **args.merge(exclusions: exclusions), &block)
+          super(source, dest, **args.merge(exclude: exclusions), &block)
         end
 
-        def sync(src, dest, exclusions = [] of String, **args)
+        def sync(src, dest, exclude = [] of String, **args)
           if Path[src].absolute?
             source = src
             exclusions = exclude
@@ -157,7 +157,7 @@ module Barista
             exclusions = exclude.map { |e| File.join(source_dir, e) }
           end
     
-          super(source, dest, **args.merge(exclusions: exclusions))
+          super(source, dest, **args.merge(exclude: exclusions))
         end
 
         def link(src, dest, chdir : String = source_dir, **args)

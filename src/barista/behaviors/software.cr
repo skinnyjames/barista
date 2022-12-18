@@ -51,7 +51,7 @@ module Barista
             .forward_error(&on_error))
         end
 
-        def sync(src, dest, **args, &block)
+        def sync(src, dest, **args, &block : Merger::Strategy)
           push_command(Commands::Sync.new(src, dest, **args, &block)
             .forward_output(&on_output)
             .forward_error(&on_error))

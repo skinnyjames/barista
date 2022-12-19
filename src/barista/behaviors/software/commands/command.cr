@@ -11,13 +11,13 @@ module Barista
             process = Process.new(command, chdir: chdir, shell: true, env: env, output: :pipe, error: :pipe)
             
             spawn do
-              while line = process.output.gets
+              while line = process.output?.try(&.gets)
                 on_output.call(line)
               end
             end
     
             spawn do
-              while line = process.error.gets
+              while line = process.error?.try(&.gets)
                 on_error.call(line)
               end
             end

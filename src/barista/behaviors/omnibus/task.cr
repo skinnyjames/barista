@@ -36,7 +36,7 @@ module Barista
           # make needed directories
           task_mkdir(install_dir, parents: true)
           task_mkdir(source_dir, parents: true)
-          task_mkdir(stage_dir, parents: true)
+          task_mkdir(stage_install_dir, parents: true)
 
           return if build_from_cache
 
@@ -47,8 +47,8 @@ module Barista
 
           if use_cache?
             update_cache
-
-            Software::Merger.new(stage_dir, install_dir).execute
+            
+            Software::Merger.new(stage_dir, "/").execute
           end
         end
 
@@ -75,7 +75,7 @@ module Barista
             false
           else
             on_output.call("cache restore succeeded.")
-            Software::Merger.new(stage_dir, install_dir).execute
+            Software::Merger.new(stage_dir, "/").execute
             true
           end
         end
@@ -111,6 +111,10 @@ module Barista
           end
         end
 
+        def stage_install_dir
+          File.join(project.stage_dir, name, project.install_dir)
+        end
+
         def stage_dir
           File.join(project.stage_dir, name)
         end
@@ -120,7 +124,7 @@ module Barista
         end
 
         def smart_install_dir
-          use_cache? ? stage_dir : install_dir
+          use_cache? ? stage_install_dir : install_dir
         end
 
         def command(str : String, chdir : String = source_dir, **args)

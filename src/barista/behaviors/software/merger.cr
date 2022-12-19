@@ -26,7 +26,7 @@ module Barista
 
         # run the merge.  If `keep_links` is true, the symbolic links will
         # be copied as-is.
-        def execute(keep_links : Bool = false)
+        def execute(keep_links : Bool = true)
           source_dir = Path[source].normalize
           files = Dir["#{source_dir}/**/*", match_hidden: true] - exclusions - ["..", "."]
 

@@ -22,6 +22,20 @@ module Barista
           .merge({ "CPPFLAGS" => compiler_flags["CFLAGS"] })
         end
 
+        # When used with caching and `make`, this env modifier
+        # will install a prefixed staged build to `stage_dir`
+        #
+        # example
+        # ```crystal
+        # command("./configure --prefix=/opt/coffeeshop/embedded")
+        # command("make install", env: with_destdir)
+        # # files are located at `/opt/barista/stage/<task>/opt/coffeeshop/embedded`
+        # ````
+        def with_destdir(env : Hash(String, String)? = {} of String => String)
+          env["DESTDIR"] = use_cache? ? stage_dir : install_dir
+          env
+        end
+
         def with_embedded_path(env = {} of String => String) : Hash(String, String)
           paths = ["#{install_dir}/bin", "#{install_dir}/embedded/bin"]
           path_value = prepend_path(paths)

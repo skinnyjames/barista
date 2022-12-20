@@ -3,29 +3,27 @@ module Barista
     module Software
       module OS
         class Kernel
-          getter :name, :release, :version, :machine, :processor, :os
+          @@name : String?
+          @@release : String?
+          @@version : String?
+          @@machine : String?
+          @@processor : String?
+          @@os : String?
 
-          @name : String?
-          @release : String?
-          @version : String?
-          @machine : String?
-          @processor : String?
-          @os : String?
-
-          def name : String
-            @name ||= run_command("uname -s")
+          def self.name : String
+            @@name ||= run_command("uname -s")
           end
 
-          def release : String
-            @release ||= run_command("uname -r")
+          def self.release : String
+            @@release ||= run_command("uname -r")
           end
 
-          def version : String
-            @version ||= run_command("uname -v")
+          def self.version : String
+            @@version ||= run_command("uname -v")
           end
 
-          def machine : String
-            @machine ||= begin
+          def self.machine : String
+            @@machine ||= begin
               machine = run_command("uname -m")
               {% if flag?(:darwin) %}
                 machine = "x86_64" if run_command("sysctl -n hw.optional.x86_64") == "1"
@@ -34,19 +32,19 @@ module Barista
             end
           end
 
-          def processor : String
-            @processor ||= run_command("uname -p")
+          def self.processor : String
+            @@processor ||= run_command("uname -p")
           end
 
-          def os : String
+          def self.os : String
             {% if flag?(:darwin) %}
-              @os ||= name
+              @@os ||= name
             {% else %}
-              @os ||= run_command("uname -o")
+              @@os ||= run_command("uname -o")
             {% end %}
           end
 
-          private def run_command(cmd) : String
+          private def self.run_command(cmd) : String
             output = [] of String
             error = [] of String
             command = Commands::Command.new(cmd)
@@ -57,7 +55,7 @@ module Barista
             raise Exception.new("Failed to run #{cmd}: #{error}") unless error.empty?
 
             unless output.join("").blank?
-              output.reject(&.blank?).last
+              output.reject(&.blank?).map(&.strip).join("\n")
             else
               raise Exception.new("No output for #{cmd}")
             end

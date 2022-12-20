@@ -8,8 +8,6 @@ module Barista
     module Software
       module OS          
         module Information
-          @kernel : Kernel?
-
           {% if flag?(:linux) %}
             include OS::Linux::Information
           {% elsif flag?(:darwin) %}
@@ -18,8 +16,8 @@ module Barista
 
           include PlatformFamily
 
-          def kernel : Kernel
-            @kernel ||= Kernel.new
+          def kernel : Kernel.class
+            Kernel
           end
         end
       end

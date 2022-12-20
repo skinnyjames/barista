@@ -23,7 +23,7 @@ module Barista
       @built = [] of String
 
       @task_finished = Channel(String | Nil).new
-      @work_done = Channel(String).new
+      @work_done = Channel(String | Exception).new
 
       @build_list = filter ? registry.dag.filter(filter) : registry.dag.nodes.dup
     end
@@ -71,7 +71,8 @@ module Barista
       end
 
       build_list.each do |_name|
-        work_done.receive
+        message = work_done.receive
+        raise "Build raised exception: #{message}" if message.is_a?(Exception)
       end
 
       # exit task finished loop
@@ -106,10 +107,11 @@ module Barista
         software.execute
         on_task_succeed.try(&.call(task))
 
-        rescue e : Exception
+        rescue ex
           if exit_on_failure?
-            on_task_failed.try(&.call(task, e.to_s))
-            exit 1
+            on_task_failed.try(&.call(task, ex.to_s))
+            task_finished.send(nil)
+            work_done.send(ex)
           end
         ensure
           task_finished.send(task)

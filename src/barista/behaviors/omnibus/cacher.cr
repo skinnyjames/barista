@@ -54,9 +54,9 @@ module Barista
         # 
         # `#unpack!` is preferred.
         def unpack_cache_here!
-          task_mkdir(task.cache_dir, parents: true)
+          task_mkdir(task.stage_dir, parents: true)
     
-          task.cache_dir
+          task.stage_dir
         end
       end
     end

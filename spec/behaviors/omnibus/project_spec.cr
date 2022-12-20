@@ -18,7 +18,6 @@ module Barista::Behaviors::Omnibus
       expect_raises(MissingAttr) { project.barista_dir }
 
       # these raise on virtue of using barista_dir
-      expect_raises(MissingAttr) { project.cache_dir }
       expect_raises(MissingAttr) { project.stage_dir }
       expect_raises(MissingAttr) { project.source_dir }
     end

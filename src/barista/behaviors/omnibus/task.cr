@@ -75,7 +75,6 @@ module Barista
             false
           else
             on_output.call("cache restore succeeded.")
-            Software::Merger.new(stage_dir, "/").execute
             true
           end
         end
@@ -117,10 +116,6 @@ module Barista
 
         def stage_dir
           File.join(project.stage_dir, name)
-        end
-
-        def cache_dir
-          File.join(project.cache_dir, tag)
         end
 
         def smart_install_dir
@@ -220,10 +215,9 @@ module Barista
         def restore
           info = Cacher.new(self)
 
-          task_mkdir(cache_dir)
           return false unless (callbacks.fetch.try(&.call(info)) || false)
           
-          Software::Merger.new(cache_dir, stage_dir).execute
+          Software::Merger.new(stage_dir, "/").execute
           
           true
         end

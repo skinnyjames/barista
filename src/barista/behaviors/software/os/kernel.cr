@@ -5,26 +5,44 @@ module Barista
         class Kernel
           getter :name, :release, :version, :machine, :processor, :os
 
-          @name : String
-          @release : String
-          @version : String
-          @machine : String
-          @processor : String
-          @os : String
+          @name : String?
+          @release : String?
+          @version : String?
+          @machine : String?
+          @processor : String?
+          @os : String?
 
-          def initialize
-            @name = run_command("uname -s")
-            @release = run_command("uname -r")
-            @version = run_command("uname -v")
-            @machine = run_command("uname -m")
-            @processor = run_command("uname -p")
-            @os = "Unknown"
+          def name : String
+            @name ||= run_command("uname -s")
+          end
 
-            {% if flag?(:linux) %}
-              @os = run_command("uname -o")
-            {% elsif flag?(:darwin) %}
-              @os = name
-              @machine = "x86_64" if run_command("sysctl -n hw.optional.x86_64") == "1"
+          def release : String
+            @release ||= run_command("uname -r")
+          end
+
+          def version : String
+            @version ||= run_command("uname -v")
+          end
+
+          def machine : String
+            @machine ||= begin
+              machine = run_command("uname -m")
+              {% if flag?(:darwin) %}
+                machine = "x86_64" if run_command("sysctl -n hw.optional.x86_64") == "1"
+              {% end %}
+              machine
+            end
+          end
+
+          def processor : String
+            @processor ||= run_command("uname -p")
+          end
+
+          def os : String
+            {% if flag?(:darwin) %}
+              @os ||= name
+            {% else %}
+              @os ||= run_command("uname -o")
             {% end %}
           end
 
@@ -38,8 +56,8 @@ module Barista
 
             raise Exception.new("Failed to run #{cmd}: #{error}") unless error.empty?
 
-            if o = output.last
-              o.strip
+            unless output.join("").blank?
+              output.reject(&.blank?).last
             else
               raise Exception.new("No output for #{cmd}")
             end

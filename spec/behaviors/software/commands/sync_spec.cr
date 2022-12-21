@@ -6,6 +6,7 @@ module Barista::Behaviors::Software::Commands
       output = [] of String
       cmd = Sync.new(File.join(fixtures_path, "commands"), File.join(downloads_path, "commands"))
               .collect_output(output)
+              .collect_error(output)
               .execute
 
       output.join(" ").should match(/Syncing/)

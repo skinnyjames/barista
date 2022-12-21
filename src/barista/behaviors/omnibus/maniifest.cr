@@ -46,7 +46,10 @@ module Barista
             json.field "software" do
               json.object do
                 project.registry.tasks.each do |task|
-                  entry = task.as(Barista::Behaviors::Omnibus::Task).to_manifest_entry
+                  omni_task = task.as(Barista::Behaviors::Omnibus::Task)
+                  next if omni_task.virtual == true
+
+                  entry = omni_task.to_manifest_entry
                   json.field task.name do
                     entry.to_json(json)
                   end

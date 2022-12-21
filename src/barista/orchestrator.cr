@@ -2,7 +2,7 @@ module Barista
   class Orchestrator(T)
     getter :registry, :workers, :filter
     getter :task_finished, :work_done
-    getter :build_list, :building, :built
+    getter :build_list, :building, :built, :active_sequences
     getter :colors
 
     getter :on_task_start, :on_task_succeed, :on_task_failed, :on_unblocked
@@ -12,6 +12,7 @@ module Barista
     @on_task_succeed : Proc(String, Nil)?
     @on_task_failed : Proc(String, String, Nil)?
     @on_unblocked : Proc(Array(String), Nil)?
+    @active_sequences = [] of String
 
     def initialize(
       @registry : Barista::Registry(T), 
@@ -23,7 +24,7 @@ module Barista
       @built = [] of String
 
       @task_finished = Channel(String | Nil).new
-      @work_done = Channel(String).new
+      @work_done = Channel(String | Exception).new
 
       @build_list = filter ? registry.dag.filter(filter) : registry.dag.nodes.dup
     end
@@ -61,6 +62,10 @@ module Barista
           built << built_task
           building.delete(built_task)
 
+          # remove sequences
+          obj = registry[built_task]
+          @active_sequences = active_sequences - obj.sequences
+
           build_next
         end
       end
@@ -71,7 +76,8 @@ module Barista
       end
 
       build_list.each do |_name|
-        work_done.receive
+        message = work_done.receive
+        raise "Build raised exception: #{message}" if message.is_a?(Exception)
       end
 
       # exit task finished loop
@@ -80,10 +86,13 @@ module Barista
 
     private def build_next
       # get all unblocked tasks that can be worked
-
       tasks = unblocked_queue.take_while do  |task|
         if !at_capacity?
           building << task
+
+          obj = registry[task]
+          active_sequences.concat(obj.sequences)
+
           true
         else
           false
@@ -106,10 +115,11 @@ module Barista
         software.execute
         on_task_succeed.try(&.call(task))
 
-        rescue e : Exception
+        rescue ex
           if exit_on_failure?
-            on_task_failed.try(&.call(task, e.to_s))
-            exit 1
+            on_task_failed.try(&.call(task, ex.to_s))
+            task_finished.send(nil)
+            work_done.send(ex)
           end
         ensure
           task_finished.send(task)
@@ -118,9 +128,27 @@ module Barista
     end
 
     private def unblocked_queue
-      build_list.select do |name|
+      unblocked = build_list.select do |name|
+        task = registry[name]
         vertex = registry.dag.vertices[name]
-        (vertex.incoming_names - built).size.zero? && !built.includes?(name) && !building.includes?(name)
+
+        (vertex.incoming_names - built).size.zero? && 
+          !built.includes?(name) && 
+            !building.includes?(name)
+      end
+
+      # filter out unblocked tasks that are currently sequenced
+      unblocked.reduce([] of String) do |accepted, name|
+        task = registry[name]
+
+        # skip if there is an active sequence
+        next(accepted) if !active_sequences.empty? && 
+          active_sequences.any? { |sequence| task.sequences.includes?(sequence) }
+
+        active_sequences.concat(task.sequences)
+        
+        accepted << name
+        accepted
       end
     end
 

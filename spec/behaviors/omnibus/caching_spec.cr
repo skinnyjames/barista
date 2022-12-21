@@ -88,7 +88,8 @@ module Barista::Behaviors::Omnibus
       end
 
 
-      File.read(File.join(task.stage_dir, "test.txt")).chomp.should eq("foobarbaz")
+      File.read(File.join(task.stage_install_dir, "test.txt")).chomp.should eq("foobarbaz")
+      File.read(File.join(task.install_dir, "test.txt")).chomp.should eq("foobarbaz")
     end
   end
 end

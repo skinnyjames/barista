@@ -10,5 +10,16 @@ module Barista::Behaviors::Software::Commands
 
       output.join(" ").should match(/hello world/)
     end
+
+    it "raises if the handler throws" do
+      arr = [] of String
+
+      e = Command.new("ls")
+        .on_output { |f| raise "bad" }
+      
+      expect_raises(CommandError, "bad") do
+        e.execute
+      end
+    end
   end
 end

@@ -52,6 +52,10 @@ module Barista
       end
     end
 
+    def reset
+      @tasks = [] of T
+    end
+
     protected def to_groups
       tasks.reduce({} of String => T) do |memo, task|
         memo[task.name] = task

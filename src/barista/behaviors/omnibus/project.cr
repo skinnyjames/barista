@@ -50,10 +50,6 @@ module Barista
           Manifest.new(self).to_json
         end
 
-        def cache_dir
-          File.join(barista_dir, "cache")
-        end
-
         def source_dir
           File.join(barista_dir, "source")
         end

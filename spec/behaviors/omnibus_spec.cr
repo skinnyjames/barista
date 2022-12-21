@@ -30,6 +30,30 @@ private class OmnibusTask < Barista::Task
   end
 end
 
+
+private class MacroTest
+  include Barista::Behaviors::Omnibus::Macros
+
+  gen_method(:string, String) { "string" }
+  gen_method(:string_override, String) { "string" }
+  gen_method(:number, Int32) { 1 }
+  gen_method(:number_override, Int32) { 1 }
+  gen_method(:boolean, Bool) { true }
+  gen_method(:boolean_inverse, Bool) { false }
+  gen_method(:boolean_inverse_override, Bool) { false }
+  gen_method(:boolean_override, Bool) { false }
+  gen_collection_method(:apple, :apples, String)
+
+  def initialize
+    string_override("override")
+    number_override(2)
+    boolean_override(false)
+    boolean_inverse_override(true)
+    apple("foo")
+    apple("bar")
+  end
+end
+
 module Barista
   module Behaviors
     module Omnibus
@@ -49,6 +73,20 @@ module Barista
           task.command("foo")
 
           task.shasum.should eq(task2.shasum)
+        end
+      end
+
+      describe "Macros" do
+        it "resolves with defaults" do
+          test = MacroTest.new
+          test.string.should eq("string")
+          test.string_override.should eq("override")
+          test.number.should eq(1)
+          test.number_override.should eq(2)
+          test.boolean.should eq(true)
+          test.boolean_override.should eq(false)
+          test.boolean_inverse_override.should eq(true)
+          test.apples.should eq(%w[foo bar])
         end
       end
     end

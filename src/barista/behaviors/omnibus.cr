@@ -7,15 +7,27 @@ module Barista
       
       module Macros
         macro gen_method(name, type, &block)
-          @{{ name.id }} : {{ type }}? = nil
+          {% if type.resolve == Bool %}
+            @{{ name.id }} : Bool = {{ block.body }}
 
-          def {{ name.id }}(val : {{ type.id }}? = nil)
-            if val.nil? 
-              @{{ name.id }} || {{ block.body }}
-            else
-              @{{ name.id }} = val
+            def {{ name.id }}(val : Bool? = nil)
+              if val.nil?
+                @{{ name.id }}
+              else
+                @{{ name.id }} = val
+              end
             end
-          end
+          {% else %}
+            @{{ name.id }} : {{ type }}? = nil
+
+            def {{ name.id }}(val : {{ type.id }}? = nil)
+              if val.nil? 
+                @{{ name.id }} || {{ block.body }}
+              else
+                @{{ name.id }} = val
+              end
+            end
+          {% end %}
         end
 
         macro gen_collection_method(name, var_name, type)

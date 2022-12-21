@@ -35,8 +35,7 @@ module Barista
 
             relative = relative_path_for(file_path, source)
             parent = File.join(destination, File.dirname(relative)).gsub(/\.$/, "")
-            target = "#{destination}/#{relative}"
-
+            target = File.join(destination, relative)
 
             # allow skipping of sync with block
             proc = strategy

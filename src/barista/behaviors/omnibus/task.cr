@@ -48,7 +48,7 @@ module Barista
           if use_cache?
             update_cache
             
-            Software::Merger.new(stage_dir, "/").execute
+            Software::Merger.new(stage_dir, "/").execute(keep_links: preserve_symlinks)
           end
         end
 
@@ -173,6 +173,7 @@ module Barista
         gen_method(:source_type, String) { "url" }
         gen_method(:relative_path, String) { nil }
         gen_method(:virtual, Bool) { false }
+        gen_method(:preserve_symlinks, Bool) { true }
         
         def use_cache?
           project.cache && cache
@@ -216,8 +217,8 @@ module Barista
           info = Cacher.new(self)
 
           return false unless (callbacks.fetch.try(&.call(info)) || false)
-          
-          Software::Merger.new(stage_dir, "/").execute
+                    
+          Software::Merger.new(stage_dir, "/").execute(keep_links: preserve_symlinks)
           
           true
         end

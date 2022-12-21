@@ -16,6 +16,7 @@ module Barista
     macro inherited
       @@name : String?
       @@dependencies = [] of Barista::Task.class
+      @@sequences = [] of String
 
       {% for ann, idx in @type.annotations(Barista::BelongsTo) %}
         extend Barista::Projectable({{ ann[0] }})
@@ -24,6 +25,14 @@ module Barista
 
       def self.dependency(task : Barista::Task.class)
         @@dependencies << task
+      end
+
+      def self.sequence(groups : Array(String))
+        @@sequences = groups
+      end
+
+      def sequences : Array(String)
+        @@sequences
       end
 
       def self.dependencies

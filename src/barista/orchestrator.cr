@@ -90,9 +90,6 @@ module Barista
         if !at_capacity?
           building << task
 
-          obj = registry[task]
-          active_sequences.concat(obj.sequences)
-
           true
         else
           false

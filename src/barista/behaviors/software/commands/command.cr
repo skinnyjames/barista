@@ -13,27 +13,35 @@ module Barista
             err = nil
 
             spawn do
-              while process.exists? && (line = process.output?.try(&.gets))
-                begin
-                  on_output.call(line)
-                rescue ex
-                  err = ex
+              begin
+                while process.exists? && (line = process.output?.try(&.gets))
+                  begin
+                    on_output.call(line)
+                  rescue ex
+                    err = ex
+                  end
                 end
+              rescue ex : IO::Error
+                err = ex
+              ensure
+                done.send(nil)
               end
-              
-              done.send(nil)
             end
     
             spawn do
-              while process.exists? && (line = process.error?.try(&.gets))
-                begin
-                  on_error.call(line)
-                rescue ex
-                  err = ex
+              begin
+                while process.exists? && (line = process.error?.try(&.gets))
+                  begin
+                    on_error.call(line)
+                  rescue ex
+                    err = ex
+                  end
                 end
+              rescue ex : IO::Error
+                err = ex
+              ensure
+                done.send(nil)
               end
-              
-              done.send(nil)
             end
 
             status = process.wait

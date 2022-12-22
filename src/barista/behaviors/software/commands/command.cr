@@ -22,7 +22,7 @@ module Barista
                   end
                 end
               rescue ex : IO::Error
-                err = ex
+                on_error.call("IO::Error #{ex}")
               ensure
                 done.send(nil)
               end
@@ -38,7 +38,7 @@ module Barista
                   end
                 end
               rescue ex : IO::Error
-                err = ex
+                on_error.call("IO::Error #{ex}")
               ensure
                 done.send(nil)
               end

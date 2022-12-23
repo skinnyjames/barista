@@ -23,6 +23,7 @@ private class CacheTask1 < Barista::Task
 
   def configure : Nil
     cache(true)
+    virtual(true)
   end
 end
 
@@ -43,6 +44,7 @@ private class CacheTask2 < Barista::Task
 
   def configure : Nil
     cache(true)
+    virtual(true)
     source("#{fixture_url}/test.tar.gz")
   end
 end

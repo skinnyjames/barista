@@ -197,6 +197,7 @@ module Barista
         def shasum : String
           digest = Digest::SHA256.new
 
+          digest << (version || "") unless virtual
           digest << (source.try(&.uri.to_s) || "")
 
           @commands.each do |cmd|

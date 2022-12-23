@@ -27,6 +27,7 @@ private class OmnibusTask < Barista::Task
   end
 
   def configure : Nil
+    version("1.2")
   end
 end
 

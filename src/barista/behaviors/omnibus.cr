@@ -42,7 +42,7 @@ module Barista
         end
 
         private def missing_attribute(attribute)
-          raise MissingRequiredAttribute.new("#{self.class.name} is missing project attribute `#{attribute}`")
+          raise MissingRequiredAttribute.new("#{self.class.name} is missing attribute `#{attribute}`")
         end
       end
     end

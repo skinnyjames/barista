@@ -27,6 +27,7 @@ private class AbsoluteLinkTask < Barista::Task
 
   def configure : Nil
     cache(true)
+    virtual(true)
     preserve_symlinks(false)
   end
 end
@@ -49,6 +50,7 @@ private class RelativeLinkTask < Barista::Task
 
   def configure : Nil
     cache(true)
+    virtual(true)
     preserve_symlinks(false)
   end
 end
@@ -70,6 +72,7 @@ private class AbsoluteWithPreserveTask < Barista::Task
 
   def configure : Nil
     cache(true)
+    virtual(true)
     preserve_symlinks(true)
   end
 end

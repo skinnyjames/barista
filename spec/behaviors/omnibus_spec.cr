@@ -62,15 +62,16 @@ module Barista
           project = OmnibusProject.new
           task = OmnibusTask.new(project)
           task.command("ls")
-
+          task.source("http://one.tar.gz")
 
           task2 = OmnibusTask.new(project)
           task2.command("ls")
-          task2.command("foo")
+          task2.source("http://two.tar.gz")
+
 
           task.shasum.should_not eq(task2.shasum)
 
-          task.command("foo")
+          task2.source("http://one.tar.gz")
 
           task.shasum.should eq(task2.shasum)
         end

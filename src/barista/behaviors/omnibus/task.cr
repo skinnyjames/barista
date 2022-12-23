@@ -197,6 +197,8 @@ module Barista
         def shasum : String
           digest = Digest::SHA256.new
 
+          digest << (source.try(&.uri.to_s) || "")
+
           @commands.each do |cmd|
             digest << cmd.description
           end

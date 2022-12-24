@@ -93,9 +93,7 @@ module Barista
         protected def shasum : String
           digest = Digest::SHA256.new
 
-          digest << name
           digest << install_dir
-
           digest.hexfinal
         end
 

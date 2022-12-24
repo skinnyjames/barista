@@ -25,6 +25,7 @@ module Barista
         gen_method(:package_scripts_path, String) { File.join(barista_dir, "package_scripts", name) }
         gen_method(:resources_path, String) { File.join(barista_dir, "resources") }
         gen_method(:package_name, String) { name }
+        gen_method(:cache_tag_prefix, String) { name }
 
         BUILD_GIT_REVISION = {{ `git rev-parse HEAD`.stringify }}.strip
 

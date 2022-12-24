@@ -191,7 +191,9 @@ module Barista
         end
 
         def tag
-          "#{project.name}-#{name}-#{shasum}"
+          prefix = project.cache_tag_prefix || ""
+
+          [prefix, name, shasum].reject(&.blank?).join("-")
         end
 
         def shasum : String

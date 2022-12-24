@@ -7,6 +7,14 @@ private class SymlinksProject < Barista::Project
     cache(true)
     barista_dir(File.join(downloads_path, "symlinks-barista"))
     install_dir(File.join(downloads_path, "symlinks-install"))
+
+    prefix = [
+      "symlinks",
+      (platform.family || "unknown").gsub(/\s/, "_"),
+      kernel.machine.gsub(/\s/, "_")
+    ].join("-")
+
+    cache_tag_prefix(prefix)
   end
 end
 

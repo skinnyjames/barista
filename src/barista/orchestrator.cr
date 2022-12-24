@@ -105,6 +105,7 @@ module Barista
 
     private def work(task)
       software = registry[task]
+      on_task_start.try(&.call(task))
 
       # build this task async
       spawn do

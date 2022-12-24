@@ -50,5 +50,13 @@ module Barista
     def error(&block : -> String | IO)
       Log.error(name, color: color, &block)
     end
+
+    def debug(&block : -> String | IO)
+      Log.debug(name, color: color, &block)
+    end
+
+    def warn(&block : -> String | IO)
+      Log.warn(name, color: color, &block)
+    end
   end
 end

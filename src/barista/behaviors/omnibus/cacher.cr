@@ -39,16 +39,6 @@ module Barista
           "#{task.tag}.tar.gz"
         end
     
-        # Log an informational message for this task
-        def info(&block : -> String)
-          meta.info(&block)
-        end
-    
-        # Log an error message for this task
-        def error(&block : -> String)
-          meta.error(&block)
-        end
-    
         # The location for unpacking the build artifact 
         # when handling manually.  
         # 

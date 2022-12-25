@@ -66,8 +66,7 @@ module Barista::Behaviors::Omnibus
       task = ManifestTask1.new(project)
       task2 = ManifestTask2.new(project)
       
-      json = project.manifest_json
-
+      json = project.manifest.to_pretty_json
       json.should be_a(String)
     end
   end

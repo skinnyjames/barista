@@ -46,9 +46,9 @@ module Barista
           task_rmdir(install_dir)
           task_rmdir(barista_dir)
         end
-        
-        def manifest_json
-          Manifest.new(self).to_json
+
+        def manifest
+          Manifest.new(self)
         end
 
         def source_dir

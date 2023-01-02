@@ -7,7 +7,7 @@ module Barista
 
     # add a task
     def <<(task)
-      @tasks << task
+      @tasks << task if self[task.name]?.nil?
     end
 
     # get a directed acyclic graph

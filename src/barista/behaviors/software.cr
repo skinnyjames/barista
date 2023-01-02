@@ -4,9 +4,22 @@ require "./software/**"
 module Barista
   module Behaviors
     module Software
+      module FileMacros
+        @@files = {} of String => String
+
+        macro file(key, path)
+          @@files[{{key}}] = {{ read_file(path) }}
+        end
+
+        def file(key : String)
+          @@files[key]
+        end
+      end
+
       module Project
         include OS::Information
         include GenericCommands
+        include FileMacros
         
         def console_application
           app = super
@@ -18,12 +31,7 @@ module Barista
         include GenericCommands
         include OS::Information
         include Emittable
-
-        @@files = {} of String => String
-
-        macro file(key, path)
-          @@files[{{key}}] = {{ read_file(path) }}
-        end
+        include FileMacros
 
         getter :commands
         @software_source : Fetchers::Net? = nil
@@ -33,10 +41,6 @@ module Barista
           build
 
           commands.map(&.execute)
-        end
-
-        def file(key : String)
-          @@files[key]
         end
 
         def command(str : String, **args)

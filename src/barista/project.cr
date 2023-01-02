@@ -14,6 +14,10 @@ module Barista
       def self.<<(task)
         @@tasks << task
       end
+
+      def self.reset_registry
+        @@registry = Barista::Registry(Barista::Task).new
+      end
       
       def self.registry
         @@registry

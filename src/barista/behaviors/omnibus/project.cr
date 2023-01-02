@@ -3,8 +3,7 @@ module Barista
     module Omnibus
       module Project
         include Macros
-        include Software::OS::Information
-        include Software::GenericCommands
+        include Software::Project
 
         @packager : Packagers::Base?
 
@@ -17,6 +16,8 @@ module Barista
         gen_method(:description, String) { "the full stack of #{name}" }
         gen_method(:homepage, String) { missing_attribute("homepage") }
         gen_method(:license, String) { "Unspecified" }
+        gen_method(:license_content, String) { "" }
+        gen_method(:license_file_path, String) { File.join(install_dir, "LICENSE") }
         gen_method(:package_name, String) { name }
         gen_method(:package_dir, String) { File.join(barista_dir, "package") }
         gen_method(:maintainer, String) { missing_attribute("maintainer") }
@@ -88,6 +89,14 @@ module Barista
           package_scripts_path
           package_name
           barista_dir
+        end
+
+        def license_collector
+          @license_collector ||= LicenseCollector.new(self)
+        end
+
+        def orchestrator(**args)
+          Barista::Behaviors::Omnibus::Orchestrator.new(self, **args)
         end
 
         protected def shasum : String

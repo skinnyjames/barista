@@ -1,17 +1,14 @@
 module Barista
   class Orchestrator(T)
+    include OrchestrationEvents
+    
     getter :registry, :workers, :filter
     getter :task_finished, :work_done
     getter :build_list, :building, :built, :active_sequences
     getter :colors
 
-    getter :on_task_start, :on_task_succeed, :on_task_failed, :on_unblocked
-
     @build_list : Array(String)
-    @on_task_start : Proc(String, Nil)?
-    @on_task_succeed : Proc(String, Nil)?
-    @on_task_failed : Proc(String, String, Nil)?
-    @on_unblocked : Proc(Array(String), Nil)?
+
     @active_sequences = [] of String
 
     def initialize(
@@ -27,22 +24,6 @@ module Barista
       @work_done = Channel(String | Exception).new
 
       @build_list = filter ? registry.dag.filter(filter) : registry.dag.nodes.dup
-    end
-
-    def on_task_start(&block : String -> Nil)
-      @on_task_start = block
-    end
-
-    def on_task_succeed(&block : String -> Nil)
-      @on_task_succeed = block
-    end
-
-    def on_task_failed(&block : String, String -> Nil)
-      @on_task_failed = block
-    end
-
-    def on_unblocked(&block : Array(String) -> Nil)
-      @on_unblocked = block
     end
 
     def execute
@@ -72,16 +53,21 @@ module Barista
 
       # initial work fiber
       spawn do
+        on_run_start.call
         build_next
       end
 
       build_list.each do |_name|
         message = work_done.receive
-        raise "Build raised exception: #{message}" if message.is_a?(Exception)
+        if message.is_a?(Exception)
+          on_run_finished.call
+          raise "Build raised exception: #{message}"
+        end
       end
 
       # exit task finished loop
       task_finished.send(nil)
+      on_run_finished.call
     end
 
     private def build_next
@@ -96,7 +82,7 @@ module Barista
         end
       end
 
-      on_unblocked.try(&.call(tasks))
+      on_unblocked.call(tasks)
 
       tasks.each do |task|
         work(task)
@@ -105,21 +91,21 @@ module Barista
 
     private def work(task)
       software = registry[task]
-      on_task_start.try(&.call(task))
+      on_task_start.call(task)
 
       # build this task async
       spawn do
         begin
-        software.execute
-        on_task_succeed.try(&.call(task))
-
+          software.execute
+          on_task_succeed.call(task)
         rescue ex
           if exit_on_failure?
-            on_task_failed.try(&.call(task, ex.to_s))
+            on_task_failed.call(task, ex.to_s)
             task_finished.send(nil)
             work_done.send(ex)
           end
         ensure
+          on_task_finished.call(task)
           task_finished.send(task)
         end
       end

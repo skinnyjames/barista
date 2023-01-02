@@ -15,6 +15,7 @@ module Barista
 
         delegate(:install_dir, to: @project)
         delegate(:barista_dir, to: @project)
+        delegate(:license_collector, to: @project)
 
         abstract def configure : Nil
 
@@ -44,6 +45,9 @@ module Barista
 
           # execute to install directory
           @commands.map(&.execute)
+
+          # copy licenses over
+          license_collector << self
 
           if use_cache?
             update_cache
@@ -122,6 +126,11 @@ module Barista
           use_cache? ? stage_install_dir : install_dir
         end
 
+        def mkdir(dir, **args)
+          dir = File.join(source_dir, dir) unless Path[dir].absolute?
+          super(dir, **args)
+        end
+
         def command(str : String, chdir : String = source_dir, **args)
           super(str, **args.merge(chdir: chdir))
         end
@@ -174,7 +183,8 @@ module Barista
         gen_method(:relative_path, String) { nil }
         gen_method(:virtual, Bool) { false }
         gen_method(:preserve_symlinks, Bool) { true }
-        
+        gen_collection_method(:license_file, :license_files, String)
+
         def use_cache?
           project.cache && cache
         end
@@ -201,6 +211,11 @@ module Barista
 
           digest << (version || "") unless virtual
           digest << (source.try(&.uri.to_s) || "")
+          digest << license
+          
+          license_files.each do |file|
+            digest << file
+          end
 
           @commands.each do |cmd|
             digest << cmd.description

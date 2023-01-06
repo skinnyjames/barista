@@ -32,7 +32,10 @@ module Barista
         # # files are located at `/opt/barista/stage/<task>/opt/coffeeshop/embedded`
         # ````
         def with_destdir(env : Hash(String, String)? = {} of String => String)
-          env["DESTDIR"] = use_cache? ? stage_dir : install_dir
+          if use_cache?
+            env["DESTDIR"] = stage_dir
+          end
+          
           env
         end
 

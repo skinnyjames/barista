@@ -11,7 +11,9 @@ pages:
   needs:
     - spec
   script:
-    - apt-get update -y  && apt-get install -y python
+    - apt-get update -y
+    - add-apt-repository ppa:deadsnakes/ppa
+    - apt-get install -y python3.8
     - make build
   artifacts:
     paths:

@@ -1,0 +1,20 @@
+image: "crystallang/crystal:latest"
+
+before_script:
+  - shards install
+
+spec:
+  stage: test
+  script: crystal spec
+
+pages:
+  needs:
+    - spec
+  script:
+    - apt-get update -y  && apt-get install -y python
+    - make build
+  artifacts:
+    paths:
+      - public
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"

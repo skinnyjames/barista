@@ -13,10 +13,10 @@ module Barista
         end
 
         def execute
-          if paths.size <= workers
-            slice_size = paths.size.to_i32
+          if paths.size <= workers || workers.zero?
+            slice_size = BigInt.new(paths.size)
           else
-            slice_size = (paths.size / workers).round(3).to_i32
+            slice_size = (BigInt.new(paths.size) / workers).round(3).to_big_i
           end
 
           path_arrs = paths.each_slice(slice_size).to_a
@@ -36,7 +36,7 @@ module Barista
             end
           end
 
-          sum = 0
+          sum = BigInt.new(0)
           path_arrs.size.times do
             sum += sum_channel.receive
           end

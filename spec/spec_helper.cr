@@ -38,6 +38,7 @@ end
 
 def reset_paths
   FileUtils.mkdir_p(cache_path)
+  FileUtils.mkdir_p(downloads_path)
 
   Dir.cd(downloads_path) do
     FileUtils.rm_r(Dir.children("."))

@@ -1,6 +1,52 @@
 
 module Barista
   annotation BelongsTo; end
+  module TaskInstanceMethods
+    def sequences : Array(String)
+      @@sequences
+    end
+
+    def dependencies
+      @@dependencies
+    end
+
+    def name : String 
+      @@name || {{ @type.id.stringify }}
+    end
+  end
+
+  # An extension to use with a Barista::Task
+  # 
+  # Not meant for external use, but here for doc generation.
+  module TaskClassMethods
+    # Declare a dependency on another task. 
+    # When orchestrating, this task will always run after any dependencies.
+    def dependency(task : Barista::Task.class)
+      @@dependencies << task
+    end
+
+    def sequence(groups : Array(String))
+      @@sequences = groups
+    end
+
+    def dependencies
+      @@dependencies
+    end
+
+    def belongs_to : Array(Barista::Project.class)
+      arr = [] of Barista::Project.class
+
+      {% for ann, idx in @type.annotations(Barista::BelongsTo) %}
+        arr << {{ ann[0] }}
+      {% end %}
+
+      arr
+    end
+
+    def name : String 
+      @@name || {{ @type.id.stringify }}
+    end
+  end
 
   abstract class Task
     abstract def execute
@@ -23,43 +69,8 @@ module Barista
         {{ ann[0] }}.tasks << self
       {% end %}
 
-      def self.dependency(task : Barista::Task.class)
-        @@dependencies << task
-      end
-
-      def self.sequence(groups : Array(String))
-        @@sequences = groups
-      end
-
-      def sequences : Array(String)
-        @@sequences
-      end
-
-      def self.dependencies
-        @@dependencies
-      end
-
-      def dependencies
-        @@dependencies
-      end
-
-      def self.name : String 
-        @@name || {{ @type.id.stringify }}
-      end
-
-      def name : String 
-        @@name || {{ @type.id.stringify }}
-      end
-
-      def self.belongs_to : Array(Barista::Project.class)
-        arr = [] of Barista::Project.class
-
-        {% for ann, idx in @type.annotations(Barista::BelongsTo) %}
-          arr << {{ ann[0] }}
-        {% end %}
-
-        arr
-      end
+      include Barista::TaskInstanceMethods
+      extend Barista::TaskClassMethods
     end
   end
 end

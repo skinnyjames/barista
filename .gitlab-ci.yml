@@ -12,6 +12,7 @@ pages:
     - spec
   script:
     - apt-get update -y
+    - apt-get install -y software-properties-common
     - add-apt-repository ppa:deadsnakes/ppa
     - apt-get install -y python3.8
     - make build

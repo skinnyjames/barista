@@ -98,7 +98,9 @@ module Barista::Behaviors::Omnibus
 
       entries = Dir.children(File.join(project.install_dir, "LICENSES"))
       entries.size.should eq(3)
-      entries.should eq(["foo-LICENSE", "multiple-LICENSE", "multiple-NOTICE"])
+      ["foo-LICENSE", "multiple-LICENSE", "multiple-NOTICE"].each do |license|
+        entries.should contain(license)
+      end
     end
 
     it "restores the license artifacts from the cache" do
@@ -120,7 +122,9 @@ module Barista::Behaviors::Omnibus
 
       entries = Dir.children(File.join(project.install_dir, "LICENSES"))
       entries.size.should eq(3)
-      entries.should eq(["foo-LICENSE", "multiple-LICENSE", "multiple-NOTICE"])
+      ["foo-LICENSE", "multiple-LICENSE", "multiple-NOTICE"].each do |license|
+        entries.should contain(license)
+      end
     end
   end
 end

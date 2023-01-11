@@ -16,7 +16,7 @@ module Barista
     @on_task_succeed : Proc(String, Nil) = ->(task : String) { }
     @on_task_failed : Proc(String, String, Nil) = ->(task : String, message : String) { }
     @on_task_finished : Proc(String, Nil) = ->(task : String) { } 
-    @on_unblocked : Proc(Array(String), Nil) = ->(tasks : Array(String)) { }
+    @on_unblocked : Proc(OrchestrationInfo, Nil) = ->(info : OrchestrationInfo) { }
 
     def forward_orchestration_events(other : OrchestrationEvents)
       other.on_run_start do
@@ -43,8 +43,8 @@ module Barista
         on_task_finished.call(task)
       end
 
-      other.on_unblocked do |tasks|
-        on_unblocked.call(tasks)
+      other.on_unblocked do |info|
+        on_unblocked.call(info)
       end
     end
 
@@ -84,7 +84,7 @@ module Barista
       self
     end
 
-    def on_unblocked(&block : Array(String) -> Nil)
+    def on_unblocked(&block : OrchestrationInfo -> Nil)
       @on_unblocked = block
 
       self

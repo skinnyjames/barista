@@ -69,8 +69,8 @@ orchestrator.on_run_finsihed do
   puts "The tasks are all finished!"
 end
 
-orchestrator.on_unblocked do |array_of_task_names|
-  puts "Tasks unblocked #{array_of_task_names.join(", ")}"
+orchestrator.on_unblocked do |orchestration_info|
+  puts "Lifecycle Information: #{orchestration_info.to_s}"
 end
 
 orchestrator.on_task_start do |task|

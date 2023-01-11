@@ -9,7 +9,7 @@ module Barista
 
     @build_list : Array(String)
 
-    @active_sequences = [] of String
+    @mutex = Mutex.new
 
     def initialize(
       @registry : Barista::Registry(T), 
@@ -19,6 +19,8 @@ module Barista
     )
       @building = [] of String
       @built = [] of String
+
+      @active_sequences = SafeSequences.new(@mutex)
 
       @task_finished = Channel(String | Nil).new
       @work_done = Channel(String | Exception).new
@@ -45,7 +47,7 @@ module Barista
 
           # remove sequences
           obj = registry[built_task]
-          @active_sequences = active_sequences - obj.sequences
+          active_sequences.remove(obj)
 
           build_next
         end
@@ -82,7 +84,15 @@ module Barista
         end
       end
 
-      on_unblocked.call(tasks)
+      orchestration_info = OrchestrationInfo.new(
+        unblocked: tasks.dup,
+        blocked: build_list.dup - (building.dup + built.dup),
+        building: building.dup,
+        built: built.dup,
+        active_sequences: active_sequences.to_a.dup
+      )
+
+      on_unblocked.call(orchestration_info)
 
       tasks.each do |task|
         work(task)
@@ -129,9 +139,12 @@ module Barista
         next(accepted) if !active_sequences.empty? && 
           active_sequences.any? { |sequence| task.sequences.includes?(sequence) }
 
-        active_sequences.concat(task.sequences)
+        active_sequences << task
         
-        accepted << name
+        @mutex.synchronize do
+          accepted << name
+        end
+
         accepted
       end
     end

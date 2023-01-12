@@ -10,7 +10,7 @@ module Barista
       @blocked : Array(String),
       @building : Array(String),
       @built : Array(String),
-      @active_sequences : Array(String)
+      @active_sequences : Array(Tuple(String, String))
     )
     end
 
@@ -24,53 +24,49 @@ module Barista
         "Blocked  #{format(blocked)}",
         "Building #{format(building)}",
         "Built #{format(built)}",
-        "Active Sequences #{format(active_sequences)}"
+        "Active Sequences #{format(format_tuples(active_sequences))}"
       ].join("\n")
     end
 
     private def format(arr)
       arr.empty? ? "None" : arr.join(", ")
     end
+
+    private def format_tuples(arr)
+      arr.map do |k, v|
+        "{ #{k}, #{v} }"
+      end
+    end
   end
 
-  # A fiber safe class to track
-  # sequence state
-  struct SafeSequences
-    getter :sequences, :mutex
+  struct Sequences
+    getter :sequences
 
-    def initialize(@mutex : Mutex, @sequences : Array(String) = [] of String); end
+    delegate(
+      :empty?,
+      :size,
+      :map,
+      :each,
+      to: @sequences
+    )
 
-    def any?(&block : String -> Bool)
-      mutex.synchronize do
-        sequences.any? do |sequence|
-          block.call(sequence)
-        end
+    def initialize(@sequences = [] of Tuple(String, String)); end
+
+    def includes_task?(task : Barista::Task)
+      sequences.any? do |sequence, name|
+        task.sequences.includes?(sequence)
       end
     end
 
     def <<(task : Barista::Task)
-      mutex.synchronize do
-        sequences.concat(task.sequences)
+      task.sequences.each do |sequence|
+        sequences << { sequence, task.name }
       end
     end
 
     def remove(task : Barista::Task)
-      mutex.synchronize do
-        sequences.reject! do |sequence|
-          task.sequences.includes?(sequence)
-        end
-      end
-    end
-
-    def empty?
-      mutex.synchronize do
-        sequences.empty?
-      end
-    end
-
-    def to_a : Array(String)
-      mutex.synchronize do
-        sequences
+      sequences.reject! do |sequence, _|
+        task.sequences.includes?(sequence)
       end
     end
   end

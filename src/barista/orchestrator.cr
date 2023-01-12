@@ -9,8 +9,6 @@ module Barista
 
     @build_list : Array(String)
 
-    @mutex = Mutex.new
-
     def initialize(
       @registry : Barista::Registry(T), 
       *, 
@@ -20,7 +18,7 @@ module Barista
       @building = [] of String
       @built = [] of String
 
-      @active_sequences = SafeSequences.new(@mutex)
+      @active_sequences = Sequences.new
 
       @task_finished = Channel(String | Nil).new
       @work_done = Channel(String | Exception).new
@@ -41,12 +39,12 @@ module Barista
           # unblock exit condition
           work_done.send(built_task)
 
+          obj = registry[built_task]
+
           # move task from building to built
+          # and remove the task from the active sequences
           built << built_task
           building.delete(built_task)
-
-          # remove sequences
-          obj = registry[built_task]
           active_sequences.remove(obj)
 
           build_next
@@ -73,15 +71,19 @@ module Barista
     end
 
     private def build_next
-      # get all unblocked tasks that can be worked
-      tasks = unblocked_queue.take_while do  |task|
-        if !at_capacity?
-          building << task
+      tasks = unblocked_queue.reduce([] of String) do |accepted, name|
+        break(accepted) if at_capacity?
 
-          true
-        else
-          false
-        end
+        task = registry[name]
+
+        # skip if there is an active sequence
+        next(accepted) if !active_sequences.empty? && active_sequences.includes_task?(task)
+
+        active_sequences << task
+        accepted << name
+        building << name
+
+        accepted
       end
 
       orchestration_info = OrchestrationInfo.new(
@@ -89,7 +91,7 @@ module Barista
         blocked: build_list.dup - (building.dup + built.dup),
         building: building.dup,
         built: built.dup,
-        active_sequences: active_sequences.to_a.dup
+        active_sequences: active_sequences.sequences.dup
       )
 
       on_unblocked.call(orchestration_info)
@@ -129,23 +131,6 @@ module Barista
         (vertex.incoming_names - built).size.zero? && 
           !built.includes?(name) && 
             !building.includes?(name)
-      end
-
-      # filter out unblocked tasks that are currently sequenced
-      unblocked.reduce([] of String) do |accepted, name|
-        task = registry[name]
-
-        # skip if there is an active sequence
-        next(accepted) if !active_sequences.empty? && 
-          active_sequences.any? { |sequence| task.sequences.includes?(sequence) }
-
-        active_sequences << task
-        
-        @mutex.synchronize do
-          accepted << name
-        end
-
-        accepted
       end
     end
 

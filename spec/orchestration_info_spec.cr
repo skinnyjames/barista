@@ -76,25 +76,25 @@ module Barista
       Blocked  ConcurrentThree, SerialTwo, SerialThree
       Building ConcurrentOne, ConcurrentTwo, SerialOne
       Built None
-      Active Sequences Serial
+      Active Sequences { Serial, SerialOne }
 
       Unblocked None
       Blocked  ConcurrentThree, SerialTwo, SerialThree
       Building ConcurrentTwo, SerialOne
       Built ConcurrentOne
-      Active Sequences Serial
+      Active Sequences { Serial, SerialOne }
 
       Unblocked SerialTwo
       Blocked  ConcurrentThree, SerialThree
       Building ConcurrentTwo, SerialTwo
       Built ConcurrentOne, SerialOne
-      Active Sequences Serial, Extra
+      Active Sequences { Serial, SerialTwo }, { Extra, SerialTwo }
 
       Unblocked SerialThree
       Blocked  ConcurrentThree
       Building ConcurrentTwo, SerialThree
       Built ConcurrentOne, SerialOne, SerialTwo
-      Active Sequences Serial
+      Active Sequences { Serial, SerialThree }
 
       Unblocked None
       Blocked  ConcurrentThree

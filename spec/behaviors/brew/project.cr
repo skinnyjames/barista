@@ -33,6 +33,8 @@ module Brew::Fixture
 
     class Start < Barista::Behaviors::Brew::Action
       nametag("start")
+      wait_duration(15)
+
       def execute
         supervise("crystal run #{external_fixture("run/server.cr")}", env: { "BREW_PORT" => task.as(Server::Task).server_port })
       end
@@ -69,6 +71,7 @@ module Brew::Fixture
 
     class Start < Barista::Behaviors::Brew::Action
       nametag("start")
+      wait_duration(5)
       def execute
         supervise("crystal", ["run", "#{external_fixture("run/client.cr")}"], env: { "BREW_PORT" => task.as(Client::Task).server_port })
       end

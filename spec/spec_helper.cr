@@ -36,16 +36,20 @@ def cache_path
   File.join(fixtures_path, "files", "cache")
 end
 
+def external_fixture(script)
+  "#{__DIR__}/../fixtures/#{script}"
+end
+
 def reset_paths
   FileUtils.mkdir_p(cache_path)
   FileUtils.mkdir_p(downloads_path)
 
   Dir.cd(downloads_path) do
-    FileUtils.rm_r(Dir.children("."))
+    FileUtils.rm_rf(Dir.children("."))
   end
   
   Dir.cd(cache_path) do
-    FileUtils.rm_r(Dir.children("."))
+    FileUtils.rm_rf(Dir.children("."))
   end
 end
 
@@ -61,11 +65,11 @@ server = HTTP::Server.new([
 ])
 
 Spec.before_each do
-  reset_paths
+  reset_paths unless ENV["CLEAN"]? == "false"
 end
 
 Spec.after_each do
-  reset_paths
+  reset_paths unless ENV["CLEAN"]? == "false"
 end
 
 Spec.after_suite do

@@ -1,14 +1,14 @@
-FROM crystallang/crystal:1.5.0
+FROM crystallang/crystal:1.6.2
 
-RUN apt update -y && apt install -y \
-    m4 \
-    automake \
-    dpkg
+WORKDIR /barista
 
-WORKDIR /etc/barista
-COPY . /etc/barista
+ADD shard.yml .
+
 RUN shards install
-RUN crystal spec
-RUN crystal build examples/coffee_shop.cr
-RUN mv coffee_shop /coffee-shop
-WORKDIR /
+
+ADD .git ./.git/
+ADD src ./src/
+ADD spec ./spec/
+ADD fixtures ./fixtures/
+
+CMD ["crystal", "spec"]

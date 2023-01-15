@@ -5,6 +5,10 @@ require "./registry"
 module Barista
   module Projectable(T); end
   abstract class Project
+    macro include_behavior(behavior)
+      include Barista::Behaviors::{{ behavior }}::Project
+    end
+
     macro inherited
       @application : ACON::Application?
       @@name : String? = nil
@@ -34,9 +38,17 @@ module Barista
       def tasks
         self.class.tasks
       end
+
+      macro nametag(val)
+        @@name = \{{ val.id.stringify }}
+      end
+
+      def self.name
+        @@name || {{ @type.id.stringify }}
+      end
       
       def name
-        @@name || self.class.name
+        @@name || {{ @type.id.stringify }}
       end
 
       def console_application : ACON::Application

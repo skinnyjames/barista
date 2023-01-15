@@ -31,7 +31,7 @@ module Barista
       end
     end
 
-    def self.debug(caller, *, color : Symbol? = nil, &block : -> String | IO)
+    def self.debug(caller, *, color : Symbol? = :default, &block : -> String | IO)
       output = block.call
       output.each_line do |line|
         Logger.debug { "#{caller.colorize(color)}> #{line.strip.colorize(:light_gray)}" }

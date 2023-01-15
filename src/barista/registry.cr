@@ -3,11 +3,21 @@ module Barista
   class Registry(T)
     getter :tasks
 
+    @inverted = false
+
     def initialize(@tasks = [] of T); end
 
     # add a task
     def <<(task)
       @tasks << task if self[task.name]?.nil?
+    end
+
+    # returns a clone of this object
+    # with the dependency graph inverted
+    def invert
+      @inverted = true
+
+      self
     end
 
     # get a directed acyclic graph
@@ -19,7 +29,11 @@ module Barista
         graph.add(task.name)
 
         task.dependencies.each do |dependency|
-          graph.add_edge(dependency.name, task.name)
+          if @inverted
+            graph.add_edge(task.name, dependency.name)
+          else
+            graph.add_edge(dependency.name, task.name)
+          end
         end
       end
 
@@ -54,6 +68,9 @@ module Barista
 
     def reset
       @tasks = [] of T
+      @inverted = false
+
+      self
     end
 
     protected def to_groups

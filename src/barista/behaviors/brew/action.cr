@@ -1,3 +1,4 @@
+require "system/user"
 require "./supervisor_command"
 require "./action_commands"
 
@@ -52,6 +53,14 @@ module Barista
           HTTP::Client.get(url).success?
         end
 
+        def action(other : Action.class)
+          action(other.new(task))
+        end
+
+        def action(actable : Action)
+          task.run(actable)
+        end
+
         macro nametag(name)
           @@name = {{ name }}
         end
@@ -62,6 +71,21 @@ module Barista
 
         def name : String
           self.class.name
+        end
+
+        def find_user(name : String) : System::User
+          System::User.find_by(name: name)
+        end
+
+        def as_user(username : String)
+          user = find_user(username)
+          current_uid = ProcessHelper.get_euid.dup
+          begin
+            ProcessHelper.set_euid(user.id.to_i64)
+            yield
+          ensure
+            ProcessHelper.set_euid(current_uid)
+          end
         end
 
         abstract def skip? : Bool

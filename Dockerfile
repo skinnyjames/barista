@@ -11,4 +11,7 @@ ADD src ./src/
 ADD spec ./spec/
 ADD fixtures ./fixtures/
 
+RUN useradd barista_spec
+ENV BARISTA_TEST_USER=barista_spec
+
 CMD ["crystal", "spec"]

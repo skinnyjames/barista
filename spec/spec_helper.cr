@@ -40,6 +40,10 @@ def external_fixture(script)
   "#{__DIR__}/../fixtures/#{script}"
 end
 
+def barista_test_user
+  ENV["BARISTA_TEST_USER"]?
+end
+
 def reset_paths
   FileUtils.mkdir_p(cache_path)
   FileUtils.mkdir_p(downloads_path)

@@ -3,7 +3,7 @@ module Brew::Fixture
     include_behavior(Brew)
     nametag("fixture-project")
 
-    invert "stop", "kill", "stop", "gkill"
+    invert "stop", "kill"
 
     recipe "restart" do
       action "stop"

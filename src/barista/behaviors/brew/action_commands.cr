@@ -16,19 +16,32 @@ module Barista
 
         include Software::Emittable
         
-        def run(command : String, env : Hash(String, String)? = nil, chdir : String? = nil)
+        def run(command : String, env : Hash(String, String)? = nil, chdir : String? = nil, as_user : String? = nil)
           output = IO::Memory.new
           error = IO::Memory.new
+          status = begin
+            unless as_user.nil?
+              Process.run("su -c '#{command}' #{as_user}", shell: true, output: output, error: error, env: env, chdir: chdir)
+            else
+              Process.run(command, shell: true, output: output, error: error, env: env, chdir: chdir)
+            end
+          end
 
-          status = Process.run(command, shell: true, output: output, error: error, env: env, chdir: chdir)
           CommandResponse.new(status, output.to_s.strip, error.to_s.strip)
         end
 
-        def run(command : String, args : Array(String), env : Hash(String, String)? = nil, chdir : String? = nil)
+        def run(command : String, args : Array(String), env : Hash(String, String)? = nil, chdir : String? = nil, as_user : String? = nil)
           output = IO::Memory.new
           error = IO::Memory.new
 
-          status = Process.run(command, args, output: output, error: error, env: env, chdir: chdir)
+          status = begin
+            unless as_user.nil?
+              Process.run("su", ["-c", command].concat(args), output: output, error: error, env: env, chdir: chdir)
+            else
+              Process.run(command, args, shell: false, output: output, error: error, env: env, chdir: chdir)
+            end
+          end
+
           CommandResponse.new(status, output.to_s.strip, error.to_s.strip)
         end
 

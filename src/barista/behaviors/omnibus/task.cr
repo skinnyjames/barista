@@ -56,6 +56,11 @@ module Barista
           end
         end
 
+        private def blockstrings
+          build_str = {{ @type.methods.find(&.name.==("build")).stringify }}.gsub(/\s*/, "")
+          build_str.scan(/blockdo(?<body>.*?)end/).map(&.["body"]).join("\n")
+        end
+
         private def fetch_source
           source.try do |source|
             begin
@@ -221,6 +226,7 @@ module Barista
             digest << cmd.description
           end
 
+          digest << blockstrings
           digest << project.shasum
   
           # include upstream dependencies in this checksum

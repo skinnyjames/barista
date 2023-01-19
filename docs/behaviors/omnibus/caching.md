@@ -75,6 +75,7 @@ The cache tag (and `cacher.filename`) is made up of the following
 
 * The `version` of the task (if applicable)
 * The `source` URI of the task
+* The text content of any `block` commands in the task (including comments)
 * The license and any license files for the task
 * The digest of all the commands configured on the task
 * The project's shasum

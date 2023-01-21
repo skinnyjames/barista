@@ -1,11 +1,14 @@
 require "spec"
 require "http/server"
 require "file_utils"
+require "webmock"
 
 require "../src/barista"
 require "./support/**"
 
 include WithHelpers
+
+WebMock.allow_net_connect = true
 
 def cache_callbacks
   callbacks = Barista::Behaviors::Omnibus::CacheCallbacks.new
@@ -42,6 +45,14 @@ end
 
 def barista_test_user
   ENV["BARISTA_TEST_USER"]?
+end
+
+def with_webmock
+  WebMock.allow_net_connect = false
+  yield
+ensure
+  WebMock.reset
+  WebMock.allow_net_connect = true
 end
 
 def reset_paths

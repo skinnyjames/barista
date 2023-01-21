@@ -14,6 +14,9 @@ dependencies:
     github: straight-shoota/crinja
   crest:
     github: mamantoha/crest
+  webmock:
+    github: manastech/webmock.cr
+    branch: master
 
 targets:
   coffee_shop:

@@ -1,0 +1,1 @@
+require "./barista_spec/**"

@@ -3,7 +3,6 @@ require "http"
 require "file_utils"
 require "../../barista"
 require "./provider/syntax"
-require "webmock"
 
 class BaristaSpec::Omnibus::Provider
   include FileUtils

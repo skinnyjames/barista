@@ -19,8 +19,7 @@ module Barista
         def shellout(command : String, env : Hash(String, String)? = nil, chdir : String? = nil, as_user : String? = nil)
           output = IO::Memory.new
           error = IO::Memory.new
-
-          command = as_user ? Process.quote(["su", "-c", safe_command(command), as_user]) : command
+          command = as_user ? Process.quote(["su", "-c", command, as_user]) : command
 
           status = Process.run(command, shell: true, output: output, error: error, env: env, chdir: chdir)
           CommandResponse.new(status, output.to_s.strip, error.to_s.strip)
@@ -30,7 +29,14 @@ module Barista
           output = IO::Memory.new
           error = IO::Memory.new
 
-          command = as_user ? Process.quote(["su", "-c", safe_command(command, args), as_user]) : command
+          if as_user
+            args.unshift(command)
+            args.unshift("-c")
+            args.push(as_user)
+            command = safe_command("su", args)
+          else
+            command = safe_command(command, args)
+          end
 
           status = Process.run(command, args, shell: false, output: output, error: error, env: env, chdir: chdir)
           CommandResponse.new(status, output.to_s.strip, error.to_s.strip)

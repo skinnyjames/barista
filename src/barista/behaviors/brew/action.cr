@@ -46,7 +46,7 @@ module Barista
         signal(kill, KILL)
 
         def supervise(command, args = [] of String, *, env : Hash(String, String)? = nil, as_user : String? = nil) : SupervisorCommand
-          uid = as_user.try { |user| find_user(user).uid.to_i64 }
+          uid = as_user.try { |user| find_user(user).id.to_i64 }
 
           SupervisorCommand.new(command, args, task: task, env: env, uid: uid)
         end

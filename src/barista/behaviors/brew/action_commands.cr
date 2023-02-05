@@ -21,7 +21,7 @@ module Barista
           error = IO::Memory.new
           status = begin
             unless as_user.nil?
-              Process.run("su -c '#{command}' #{as_user}", shell: true, output: output, error: error, env: env, chdir: chdir)
+              Process.run("su -c \"#{command}\" #{as_user}", shell: true, output: output, error: error, env: env, chdir: chdir)
             else
               Process.run(command, shell: true, output: output, error: error, env: env, chdir: chdir)
             end

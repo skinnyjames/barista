@@ -19,14 +19,10 @@ module Barista
         def shellout(command : String, env : Hash(String, String)? = nil, chdir : String? = nil, as_user : String? = nil)
           output = IO::Memory.new
           error = IO::Memory.new
-          status = begin
-            unless as_user.nil?
-              Process.run("su -c \"#{command}\" #{as_user}", shell: true, output: output, error: error, env: env, chdir: chdir)
-            else
-              Process.run(command, shell: true, output: output, error: error, env: env, chdir: chdir)
-            end
-          end
 
+          command = as_user ? Process.quote(["su", "-c", "\"#{command}\"", as_user]) : command
+
+          status = Process.run(command, shell: true, output: output, error: error, env: env, chdir: chdir)
           CommandResponse.new(status, output.to_s.strip, error.to_s.strip)
         end
 
@@ -34,18 +30,13 @@ module Barista
           output = IO::Memory.new
           error = IO::Memory.new
 
-          status = begin
-            unless as_user.nil?
-              Process.run("su", ["-c", "\"#{safe_command(command, args)}\"", as_user], output: output, error: error, env: env, chdir: chdir)
-            else
-              Process.run(command, args, shell: false, output: output, error: error, env: env, chdir: chdir)
-            end
-          end
+          command = as_user ? Process.quote(["su", "-c", "\"#{safe_command(command, args)}\"", as_user]) : command
 
+          status = Process.run(command, args, shell: false, output: output, error: error, env: env, chdir: chdir)
           CommandResponse.new(status, output.to_s.strip, error.to_s.strip)
         end
 
-        private def safe_command(command, args)
+        private def safe_command(command, args = [] of String)
           cmd = command.split(" ").reject(&.blank?)
           bin = cmd.delete_at(0)
           command_args = Process.quote(Process.parse_arguments(cmd.join(" ")))

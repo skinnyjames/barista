@@ -37,7 +37,12 @@ module Barista
             str << "#{extra_args}" unless extra_args.blank?
           end
 
-          as_user ? "su -c \"#{str}\" #{as_user}" : str
+          if user = as_user
+            args = Process.quote(["-c", "\"#{str}\"", user])
+            "su #{args}"
+          else
+            str
+          end
         end
 
         def init_io : IO | Process::Redirect

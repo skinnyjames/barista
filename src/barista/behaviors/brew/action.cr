@@ -46,7 +46,7 @@ module Barista
         signal(kill, KILL)
 
         def supervise(command, args = [] of String, *, env : Hash(String, String)? = nil, as_user : String? = nil) : SupervisorCommand
-          SupervisorCommand.new(command, args, task: task, env: env, uid: uid, as_user: as_user)
+          SupervisorCommand.new(command, args, task: task, env: env, as_user: as_user)
         end
 
         def http_ok?(url) : Bool

@@ -34,14 +34,16 @@ module Barista
           output = IO::Memory.new
           error = IO::Memory.new
 
-          if as_user
-            new_command = "su"
-            args = ["-c", safe_command(command, args), as_user]
-          else
-            new_command = safe_command(command, args)
+          staus = begin 
+            if as_user
+              new_command = "su"
+              args = ["-c", safe_command(command, args), as_user]
+              Process.run(new_command, args, shell: false, output: output, error: error, env: env, chdir: chdir)
+            else
+              Process.run(command, args, shell: false, output: output, error: error, env: env, chdir: chdir)
+            end
           end
 
-          status = Process.run(new_command, args, shell: false, output: output, error: error, env: env, chdir: chdir)
           CommandResponse.new(status, output.to_s.strip, error.to_s.strip)
         end
 

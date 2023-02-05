@@ -36,7 +36,7 @@ module Barista
 
           status = begin
             unless as_user.nil?
-              Process.run("su", ["-c", "\"#{safe_command(command, args)}\""], output: output, error: error, env: env, chdir: chdir)
+              Process.run("su", ["-c", "\"#{safe_command(command, args)}\"", as_user], output: output, error: error, env: env, chdir: chdir)
             else
               Process.run(command, args, shell: false, output: output, error: error, env: env, chdir: chdir)
             end

@@ -18,9 +18,7 @@ module Barista
           Process.fork do
             io = init_io
             ProcessHelper.set_pgid(Process.pid, 0)
-            cmd = as_user ? "sh -c \"#{eval_script}\" #{as_user}" : eval_script
-
-            Process.exec(cmd, env: env, shell: true, output: io, error: io, chdir: ".")
+            Process.exec(eval_script, env: env, shell: true, output: io, error: io, chdir: ".")
           end
         end
 
@@ -33,11 +31,13 @@ module Barista
           bin = cmd.delete_at(0)
           command_args = Process.quote(Process.parse_arguments(cmd.join(" ")))
           extra_args = Process.quote(args)
-          String.build do |str|
+          str = String.build do |str|
             str << "#{bin} "
             str << "#{command_args} " unless command_args.blank?
             str << "#{extra_args}" unless extra_args.blank?
           end
+
+          as_user ? "sh -c \"#{str}\" #{as_user}" : str
         end
 
         def init_io : IO | Process::Redirect

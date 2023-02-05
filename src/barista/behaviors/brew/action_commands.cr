@@ -34,7 +34,7 @@ module Barista
           output = IO::Memory.new
           error = IO::Memory.new
 
-          staus = begin 
+          status = begin 
             if as_user
               new_command = "su"
               args = ["-c", safe_command(command, args), as_user]

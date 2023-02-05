@@ -20,7 +20,7 @@ module Barista
           output = IO::Memory.new
           error = IO::Memory.new
 
-          command = as_user ? Process.quote(["su", "-c", "'#{command}'", as_user]) : command
+          command = as_user ? Process.quote(["su", "-c", safe_command(command), as_user]) : command
 
           status = Process.run(command, shell: true, output: output, error: error, env: env, chdir: chdir)
           CommandResponse.new(status, output.to_s.strip, error.to_s.strip)
@@ -30,7 +30,7 @@ module Barista
           output = IO::Memory.new
           error = IO::Memory.new
 
-          command = as_user ? Process.quote(["su", "-c", "'#{safe_command(command, args)}'", as_user]) : command
+          command = as_user ? Process.quote(["su", "-c", safe_command(command, args), as_user]) : command
 
           status = Process.run(command, args, shell: false, output: output, error: error, env: env, chdir: chdir)
           CommandResponse.new(status, output.to_s.strip, error.to_s.strip)

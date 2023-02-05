@@ -37,7 +37,7 @@ module Barista
             str << "#{extra_args}" unless extra_args.blank?
           end
 
-          as_user ? "sh -c \"#{str}\" #{as_user}" : str
+          as_user ? "su -c \"#{str}\" #{as_user}" : str
         end
 
         def init_io : IO | Process::Redirect

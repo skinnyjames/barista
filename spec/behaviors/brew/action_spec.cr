@@ -31,7 +31,7 @@ private class UserPerm < Barista::Behaviors::Brew::Action
     if username = barista_test_user
       setup_dir(username)
 
-      run("echo 'hello' > #{downloads_path}/#{username}/hello", as_user: username)
+      shellout("echo 'hello' > #{downloads_path}/#{username}/hello", as_user: username)
       as_user(username) do
         File.write("#{downloads_path}/#{username}/foo", "foo")
       end
@@ -41,8 +41,8 @@ private class UserPerm < Barista::Behaviors::Brew::Action
 
   private def setup_dir(username)
     mkdir("#{downloads_path}/#{username}")
-    run("chmod -Rf 755 #{downloads_path}/#{username}")
-    run("chown #{username} #{downloads_path}/#{username}")
+    shellout("chmod -Rf 755 #{downloads_path}/#{username}")
+    shellout("chown #{username} #{downloads_path}/#{username}")
   end
 end
 

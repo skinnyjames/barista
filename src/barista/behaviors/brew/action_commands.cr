@@ -16,7 +16,7 @@ module Barista
 
         include Software::Emittable
         
-        def run(command : String, env : Hash(String, String)? = nil, chdir : String? = nil, as_user : String? = nil)
+        def shellout(command : String, env : Hash(String, String)? = nil, chdir : String? = nil, as_user : String? = nil)
           output = IO::Memory.new
           error = IO::Memory.new
           status = begin
@@ -30,7 +30,7 @@ module Barista
           CommandResponse.new(status, output.to_s.strip, error.to_s.strip)
         end
 
-        def run(command : String, args : Array(String), env : Hash(String, String)? = nil, chdir : String? = nil, as_user : String? = nil)
+        def shellout(command : String, args : Array(String), env : Hash(String, String)? = nil, chdir : String? = nil, as_user : String? = nil)
           output = IO::Memory.new
           error = IO::Memory.new
 
@@ -46,11 +46,11 @@ module Barista
         end
 
         def success?(cmd, **opts)
-          run(cmd, **opts).success?
+          shellout(cmd, **opts).success?
         end
 
         def success?(cmd, args, **opts)
-          run(cmd, args, **opts).success?
+          shellout(cmd, args, **opts).success?
         end
 
         def command(str : String, **args)

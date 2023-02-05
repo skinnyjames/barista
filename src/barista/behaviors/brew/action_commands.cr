@@ -36,13 +36,25 @@ module Barista
 
           status = begin
             unless as_user.nil?
-              Process.run("su", ["-c", command].concat(args), output: output, error: error, env: env, chdir: chdir)
+              Process.run("su", ["-c", "\"#{safe_command(command, args)}\""], output: output, error: error, env: env, chdir: chdir)
             else
               Process.run(command, args, shell: false, output: output, error: error, env: env, chdir: chdir)
             end
           end
 
           CommandResponse.new(status, output.to_s.strip, error.to_s.strip)
+        end
+
+        private def safe_command(command, args)
+          cmd = command.split(" ").reject(&.blank?)
+          bin = cmd.delete_at(0)
+          command_args = Process.quote(Process.parse_arguments(cmd.join(" ")))
+          extra_args = Process.quote(args)
+          String.build do |str|
+            str << "#{bin} "
+            str << "#{command_args} " unless command_args.blank?
+            str << "#{extra_args}" unless extra_args.blank?
+          end
         end
 
         def success?(cmd, **opts)

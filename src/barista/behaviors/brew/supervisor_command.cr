@@ -2,13 +2,14 @@ module Barista
   module Behaviors
     module Brew
       class SupervisorCommand
-        getter :command, :task, :env, :args
+        getter :command, :task, :env, :args, :uid
 
         def initialize(
           @command : String,
           @args = [] of String,
           *,
           @task : Brew::Task,
+          @uid : Int64? = nil,
           @env : Hash(String, String)? = nil
         )
         end
@@ -17,6 +18,7 @@ module Barista
           Process.fork do
             io = init_io
             ProcessHelper.set_pgid(Process.pid, 0)
+            uid.try { |id| ProcessHelper.set_euid(id) }
             Process.exec(eval_script, env: env, shell: true, output: io, error: io, chdir: ".")
           end
         end

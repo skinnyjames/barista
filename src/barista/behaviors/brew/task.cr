@@ -154,4 +154,3 @@ module Barista
     end
   end
 end
-

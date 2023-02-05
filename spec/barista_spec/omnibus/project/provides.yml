@@ -15,4 +15,3 @@ tasks:
     provides:
       files:
         - name: LICENSE
-    

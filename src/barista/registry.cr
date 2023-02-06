@@ -53,7 +53,7 @@ module Barista
     def upstreams(task : T) : Array(T)
       lookup = to_groups
       filtered = dag.filter([task.name])
-      (filtered - [task.name]).map do |name|
+      (filtered - [task.name]).sort.map do |name|
         lookup[name]
       end
     end
@@ -61,7 +61,7 @@ module Barista
     def upstreams(task : String) : Array(T)
       lookup = to_groups
       filtered = dag.filter([task])
-      (filtered - [task]).map do |name|
+      (filtered - [task]).sort.map do |name|
         lookup[name]
       end
     end

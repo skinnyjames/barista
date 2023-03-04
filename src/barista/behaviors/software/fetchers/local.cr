@@ -5,16 +5,22 @@ module Barista
         class Local
           include FileUtils
         
-          getter :source
+          getter :source, :exclude
 
-          def initialize(@source : String); end
+          def initialize(@source : String, *, @exclude = [] of String); end
 
           def execute(dest_dir : String, name : String)
-            cp_r(source, File.join(dest_dir, name))
+            Merger.new(source, File.join(dest_dir, name), exclude: excluded).execute
           end
 
           def location
             source
+          end
+
+          private def excluded
+            exclude.map do |excludes|
+              File.join(source, excludes)
+            end
           end
         end
       end

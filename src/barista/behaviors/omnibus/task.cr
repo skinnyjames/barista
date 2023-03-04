@@ -91,15 +91,18 @@ module Barista
         # Define the source code to fetch when building this project
         # 
         # Currently only supports `Barista::Behaviors::Omnibus::Fetchers::Net`
-        def source(location : String, *, type : Symbol = :net, **opts)
-          @source = case type
-                    when :net
-                      Software::Fetchers::Net.new(location, **opts)
-                    when :local
-                      Software::Fetchers::Local.new(location)
-                    else
-                      raise "No fetcher for #{type}"
-                    end
+        def source(location : String, **opts)
+          @source = Software::Fetchers::Net.new(location, **opts)
+          
+          self
+        end
+
+        # Uses a local source
+        #
+        # 
+        def local_source(location : String, **opts)
+          @source = Software::Fetchers::Local.new(location, **opts)
+          
           self
         end
 

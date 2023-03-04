@@ -57,7 +57,7 @@ module Barista::Behaviors::Omnibus
     it "conifgures on initialize" do
       task = ConfigurableTask.new(TestProject.new)
       task.version.should eq("foobar")
-      task.source.try(&.uri.to_s).should eq(File.join(fixture_url, "test.tar.gz"))
+      task.source.try(&.location).should eq(File.join(fixture_url, "test.tar.gz"))
     end
 
     it "downloads the source to a relative path and executes commands in that context" do

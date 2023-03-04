@@ -65,6 +65,10 @@ module Barista
             @uri = URI.parse(url)
           end
 
+          def location
+            uri.to_s
+          end
+
           # downloads and extracts this url to `#{dest_dir}/#{name}`
           # which should also be
           # `#{project.source_dir}/#{task.name}`

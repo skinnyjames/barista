@@ -87,7 +87,9 @@ class BaristaSpec::Omnibus::Provider
 
   def mutate_task(task)
     if src = task.source
-      task.source(src.uri.to_s, extension: src.extension)
+      if src.is_a?(Barista::Behaviors::Software::Fetchers::Net)
+        task.source(src.location, extension: src.extension)
+      end
     end
 
     task.commands.reject!(&.is_a?(Barista::Behaviors::Software::Commands::Patch))
@@ -133,12 +135,14 @@ class BaristaSpec::Omnibus::Provider
 
   def mock_task_source(task)
     task.source.try do |src|
-      if Dir.exists?(task_path(task))
-        gzip_task_path(task)
+      if src.is_a?(Barista::Behaviors::Software::Fetchers::Net)
+        if Dir.exists?(task_path(task))
+          gzip_task_path(task)
 
-        WebMock.stub(:get, src.uri.to_s).to_return do |request|
-          headers = HTTP::Headers.new.merge!({ "Content-Type" => "application/gzip", "Content-Encoding" => "gzip" })
-          HTTP::Client::Response.new(200, body_io: File.open("#{task_path(task)}.tar.gz"), headers: headers)
+          WebMock.stub(:get, src.uri.to_s).to_return do |request|
+            headers = HTTP::Headers.new.merge!({ "Content-Type" => "application/gzip", "Content-Encoding" => "gzip" })
+            HTTP::Client::Response.new(200, body_io: File.open("#{task_path(task)}.tar.gz"), headers: headers)
+          end
         end
       end
     end

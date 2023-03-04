@@ -91,14 +91,20 @@ module Barista
         # Define the source code to fetch when building this project
         # 
         # Currently only supports `Barista::Behaviors::Omnibus::Fetchers::Net`
-        def source(url : String, **opts)
-          @source = Software::Fetchers::Net.new(url, **opts)
-
+        def source(location : String, *, type : Symbol = :net, **opts)
+          @source = case type
+                    when :net
+                      Software::Fetchers::Net.new(location, **opts)
+                    when :local
+                      Software::Fetchers::Local.new(location)
+                    else
+                      raise "No fetcher for #{type}"
+                    end
           self
         end
 
         # Returns a configured fetcher if one exists.
-        def source : Software::Fetchers::Net?
+        def source : Software::Fetchers::Net | Software::Fetchers::Local | Nil
           @source
         end
 
@@ -199,7 +205,7 @@ module Barista
             name,
             source_type: source_type,
             locked_version: version,
-            locked_source: source.try(&.uri.to_s) || "",
+            locked_source: source.try(&.location) || "",
             described_version: version,
             license: license,
           )
@@ -215,7 +221,7 @@ module Barista
           digest = Digest::SHA256.new
 
           digest << (version || "") unless virtual
-          digest << (source.try(&.uri.to_s) || "")
+          digest << (source.try(&.location) || "")
           digest << license
           
           license_files.each do |file|

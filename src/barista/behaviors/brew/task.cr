@@ -12,6 +12,7 @@ module Barista
       module Task
         include FileUtils
         include Software::Emittable
+        include Software::FileMacros
 
         delegate(
           :on_action_skipped,

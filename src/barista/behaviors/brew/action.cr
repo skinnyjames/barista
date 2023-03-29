@@ -8,6 +8,7 @@ module Barista
       abstract class Action
         include Macros
         include ActionCommands
+        include Software::FileMacros
 
         getter :task, :command
 

@@ -27,6 +27,7 @@ module Barista
       module Project
         include Macros
         include FileUtils
+        include Software::FileMacros
         include Brew::Events
         
         macro included

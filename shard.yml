@@ -9,7 +9,6 @@ crystal: 1.6.0
 dependencies:
   athena-console:
     github: athena-framework/console
-    version: ~> 0.2.0
   crinja:
     github: straight-shoota/crinja
   crest:

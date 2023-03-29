@@ -1,9 +1,8 @@
 module Barista
   module Behaviors
     module Brew
+      @[ACONA::AsCommand("run", description: "run a brew action")]
       class CliCommand < ACON::Command
-        @@default_name = "run"
-
         getter :project
 
         def initialize(@project : Project)

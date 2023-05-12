@@ -4,8 +4,8 @@ class Coffeeshop < Barista::Project
   include Barista::Behaviors::Omnibus::Project
 
   def initialize
-    install_dir("#{__DIR__}/build/coffeeshop")
-    barista_dir("#{__DIR__}/build/barista")
+    install_dir("/opt/coffeeshop")
+    barista_dir("/opt/barista")
     maintainer("Sean Gregory")
     homepage("https://gitlab.com/skinnyjames/barista")
     build_version("1.2.3")

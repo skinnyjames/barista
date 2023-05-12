@@ -13,3 +13,4 @@ public/
 .venv/
 coffee_shop
 lib/
+examples/build

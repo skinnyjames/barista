@@ -11,4 +11,5 @@ zzz/
 # Don't check in mkdoc generation
 public/
 .venv/
+coffee_shop
 lib/

@@ -4,8 +4,8 @@ class Coffeeshop < Barista::Project
   include Barista::Behaviors::Omnibus::Project
 
   def initialize
-    install_dir("/opt/coffeeshop")
-    barista_dir("/opt/barista")
+    install_dir("#{__DIR__}/build/coffeeshop")
+    barista_dir("#{__DIR__}/build/barista")
     maintainer("Sean Gregory")
     homepage("https://gitlab.com/skinnyjames/barista")
     build_version("1.2.3")
@@ -49,8 +49,8 @@ class Coffeeshop < Barista::Project
       Barista::Log.info(task) { "build succeeded" }
     end
 
-    orchestrator.on_unblocked do |tasks|
-      Barista::Log.info("Coffeeshop") { "Tasks unblocked: #{tasks.join(", ")}" }
+    orchestrator.on_unblocked do |orchestration_info|
+      Barista::Log.info("Coffeeshop") { "Tasks unblocked: #{orchestration_info.to_s}" }
     end
 
     orchestrator.execute

@@ -14,6 +14,10 @@ Barista was designed to be an extensible framework for writing and running a dep
 
 2. Run `shards install`
 
+## Run example
+
+* `shards build coffee_shop && ./bin/coffee_shop build`
+
 ## Documentation
 
 Documentation is [available here](https://skinnyjames.gitlab.io/barista/)

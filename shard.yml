@@ -15,4 +15,8 @@ dependencies:
   crest:
     github: mamantoha/crest
 
+targets:
+  coffee_shop:
+    main: examples/coffee_shop.cr
+
 license: MIT

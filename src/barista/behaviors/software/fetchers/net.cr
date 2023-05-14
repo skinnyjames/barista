@@ -37,7 +37,7 @@ module Barista
         class Net
           include GenericCommands
           include Verifiable
-          COMPRESSED_TAR_EXTENSIONS = %w{.tar.gz .tgz tar.bz2 .tar.xz .txz .tar.lzma}
+          COMPRESSED_TAR_EXTENSIONS = %w{.tar.gz .tgz tar.bz2 .tar.xz .txz .tar.lz .tar.lzma}
 
           getter :uri, :algorithim, :headers, :tls, :binary, :compress, :strip, :extension
 

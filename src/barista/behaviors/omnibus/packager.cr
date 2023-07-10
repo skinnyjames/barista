@@ -15,7 +15,7 @@ module Barista
         end
 
         def self.supported?
-         %w[debian ubuntu centos redhat fedora].includes?(platform.family) && package_klass.supported?
+         %w[debian ubuntu centos redhat fedora mac_os_x].includes?(platform.family) && package_klass.supported?
         end
 
         def self.package_klass
@@ -24,6 +24,8 @@ module Barista
             Packagers::Deb
           when "centos", "redhat", "fedora"
             Packagers::Rpm
+          when "mac_os_x"
+            Packagers::Pkg
           else
             raise "Can't find packager for #{platform.family}"
           end

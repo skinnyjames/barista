@@ -6,7 +6,7 @@ private class PackageProject < Barista::Project
   def initialize
     barista_dir(File.join(downloads_path, "package", "barista"))
     install_dir(File.join(downloads_path, "package", "install"))
-    package_dir(File.join(downloads_path, "package"))
+    package_dir(File.join(downloads_path, "package", "pkg"))
     maintainer("Sean Gregory")
     homepage("https://gitlab.com/skinnyjames/barista")
     build_version("1.2.3")
@@ -61,6 +61,10 @@ module Barista::Behaviors::Omnibus
         output = [] of String
 
         packager = Barista::Behaviors::Omnibus::Packager.discover(project)
+
+        if packager.is_a?(Barista::Behaviors::Omnibus::Packagers::Pkg)
+          packager.identifier("com.barista.addy")
+        end
 
         packager.on_output do |str|
           Barista::Log.info("Packaging <#{packager.class}>") { str }

@@ -1,0 +1,6 @@
+pipeline:
+  test:
+    image: "crystallang/crystal:latest"
+    commands:
+      - shards install
+      - crystal spec

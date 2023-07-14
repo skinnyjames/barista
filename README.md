@@ -14,13 +14,9 @@ Barista was designed to be an extensible framework for writing and running a dep
 
 2. Run `shards install`
 
-## Run example
+## Run tests
 
-1. `docker build -t coffee_shop .`
-1. `docker run -it coffee_shop bash`
-1. `/coffee-shop build --workers=5`
-
-A package should be present in `/opt/barista/package`
+* `docker-compose up`
 
 ## Documentation
 

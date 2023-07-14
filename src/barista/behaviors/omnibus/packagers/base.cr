@@ -40,11 +40,15 @@ module Barista
               **/.gitkeep
             }
           end
+
+          def inclusions
+            project.inclusions.map { |inclusion| File.join(project.install_dir, inclusion) }
+          end
           
           protected def sync_install_to(dest : String)
             task_mkdir(dest, parents: true)
 
-            Software::Merger.new(project.install_dir, dest, exclude: exclusions).execute(keep_links: true)
+            Software::Merger.new(project.install_dir, dest, exclude: exclusions, includes: inclusions).execute(keep_links: true)
           end
 
           protected def package_path

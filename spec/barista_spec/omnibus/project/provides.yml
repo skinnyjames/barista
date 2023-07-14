@@ -1,0 +1,17 @@
+system:
+  binaries:
+    - name: make
+tasks:
+  - name: task-installs-binary
+    provides:
+      binaries:
+        - name: configure
+      files:
+        - name: COPYING
+    installs:
+      binaries:
+        - name: embedded/bin/task-installs-binary
+  - name: task-provides-license
+    provides:
+      files:
+        - name: LICENSE

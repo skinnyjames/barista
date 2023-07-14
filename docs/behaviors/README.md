@@ -24,4 +24,26 @@ task.execute
 
 `cat some_file # => Hello, ubuntu`
 
-There are currently 2 behaviors bundled with Barista, [Barista::Behaviors::Software][] and [Barista::Behaviors::Omnibus][].
+## Shorthand
+
+Generally behaviors should expose a Task and Project mixin. 
+
+A macro is provided as short hand for mixing in behaviors
+
+```crystal
+class SayHello < Barista::Task
+  # mixin to add methods for interacting with the host / software
+  include_behavior(Software)
+
+  # emits an event that contains the host OS platform family.
+  def build : Nil
+    emit("Hello, #{platform.family}")
+  end
+end
+```
+
+There are currently 3 behaviors bundled with Barista
+
+* [Barista::Behaviors::Software](/barista/behaviors/software)
+* [Barista::Behaviors::Omnibus](/barista/behaviors/omnibus)
+* [Barista::Behaviors::Brew](/barista/behaviors/brew)

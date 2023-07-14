@@ -9,7 +9,16 @@ After installing the dependencies
 
 * `git clone https://gitlab.com/skinnyjames/barista && cd barista`
 * `shards install` to install project dependencies
-* `crystal spec` to run the specs
+* `./spec.sh` to run the specs
+
+!!! warning
+
+    The specs include integration tests against a [Barista::Behaviors::Brew::Project][], which spins up and tears down persistent processes.
+
+    If working on Brew::Project, there is a chance of spinning up unterminated background processes.  A docker-compose file is provided to assist in testing without worrying about doing this.  
+
+    * `docker-compose build && docker-compose run spec`
+    * If you want to run locally, you can exclude the brew specs: `crystal spec --tag="~brew"`
 
 ## Considerations
 

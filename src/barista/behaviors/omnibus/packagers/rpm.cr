@@ -52,7 +52,8 @@ module Barista
             end
 
             destination = File.join(build_dir, project.install_dir)
-            Software::Merger.new(project.install_dir, destination, exclude: exclusions).execute
+            Software::Merger.new(project.install_dir, destination, exclude: exclusions, includes: inclusions).execute
+
 
             project.extra_package_files.each do |file|
               parent      = File.dirname(file)
@@ -110,7 +111,7 @@ module Barista
             end
 
             # Get a list of all files
-            files = Dir.glob("#{build_dir}/**/*")
+            files = (Dir.glob(["#{build_dir}/**/*"], true) - ["..", "."])
              .map { |path| build_filepath(path) }
 
             render_template(SPEC_TEMPLATE,

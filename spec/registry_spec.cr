@@ -34,7 +34,7 @@ module Barista
       registry = Barista::Registry(Registerable).new
       [one, two, three, four].each { |registerable| registry << registerable }
     
-      registry.upstreams(four).should eq([two, one])
+      registry.upstreams(four).should eq([one, two])
     end
   end
 end

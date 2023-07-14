@@ -30,6 +30,7 @@ module Barista
 
         BUILD_GIT_REVISION = {{ `git rev-parse HEAD`.stringify }}.strip
 
+        gen_collection_method(:includes, :inclusions, String)
         gen_collection_method(:exclude, :exclusions, String)
         gen_collection_method(:runtime_dependency, :runtime_dependencies, String)
         gen_collection_method(:conflict, :conflicts, String)

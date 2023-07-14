@@ -6,7 +6,6 @@
 # Libraries don't need dependency lock
 # Dependencies will be locked in applications that use them
 /shard.lock
-zzz/
 
 # Don't check in mkdoc generation
 public/
@@ -14,3 +13,4 @@ public/
 coffee_shop
 lib/
 examples/build
+spec/support/downloads/

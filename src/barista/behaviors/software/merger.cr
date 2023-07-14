@@ -12,15 +12,15 @@ module Barista
       #
       # return `false` to skip this file copy
       struct Merger
-        getter :source, :destination, :strategy, :exclude
+        getter :source, :destination, :strategy, :exclude, :includes
 
         alias Strategy = Proc(String, String, Bool)
 
-        def initialize(@source : String, @destination : String, @exclude = [] of String, &block : Merger::Strategy);
+        def initialize(@source : String, @destination : String, @exclude = [] of String, @includes = [] of String, &block : Merger::Strategy);
           @strategy = block
         end
 
-        def initialize(@source : String, @destination : String, @exclude = [] of String)
+        def initialize(@source : String, @destination : String, @exclude = [] of String, @includes = [] of String)
           @strategy = nil
         end
 
@@ -28,7 +28,7 @@ module Barista
         # be copied as-is.
         def execute(keep_links : Bool = true)
           source_dir = Path[source].normalize
-          files = Dir["#{source_dir}/**/*", match_hidden: true] - exclusions - ["..", "."]
+          files = (Dir["#{source_dir}/**/*", match_hidden: true] - exclusions + inclusions - ["..", "."])
 
           files.each do |file_path|
             next if File.directory?(file_path)
@@ -74,6 +74,10 @@ module Barista
 
         def relative_path_for(path, source)
           Path[path].relative_to(source).to_s
+        end
+
+        def inclusions
+          Dir.glob(includes, true)
         end
 
         def exclusions

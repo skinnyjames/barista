@@ -11,6 +11,8 @@
         * [Caching](behaviors/omnibus/caching.md)
         * [Packaging](behaviors/omnibus/packaging.md)
         * [Manifest](behaviors/omnibus/manifest.md)
+      * [Brew](behaviors/brew.md)
+        * [Supervision](behaviors/brew/supervision.md)
   * [CLI](cli.md)
 * [API](Barista/)
 * [Developing](developing.md)

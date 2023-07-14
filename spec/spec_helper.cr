@@ -1,11 +1,14 @@
 require "spec"
 require "http/server"
 require "file_utils"
+require "webmock"
 
 require "../src/barista"
 require "./support/**"
 
 include WithHelpers
+
+WebMock.allow_net_connect = true
 
 def cache_callbacks
   callbacks = Barista::Behaviors::Omnibus::CacheCallbacks.new
@@ -36,16 +39,32 @@ def cache_path
   File.join(fixtures_path, "files", "cache")
 end
 
+def external_fixture(script)
+  "#{__DIR__}/../fixtures/#{script}"
+end
+
+def barista_test_user
+  ENV["BARISTA_TEST_USER"]?
+end
+
+def with_webmock
+  WebMock.allow_net_connect = false
+  yield
+ensure
+  WebMock.reset
+  WebMock.allow_net_connect = true
+end
+
 def reset_paths
   FileUtils.mkdir_p(cache_path)
   FileUtils.mkdir_p(downloads_path)
 
   Dir.cd(downloads_path) do
-    FileUtils.rm_r(Dir.children("."))
+    FileUtils.rm_rf(Dir.children("."))
   end
   
   Dir.cd(cache_path) do
-    FileUtils.rm_r(Dir.children("."))
+    FileUtils.rm_rf(Dir.children("."))
   end
 end
 
@@ -61,11 +80,11 @@ server = HTTP::Server.new([
 ])
 
 Spec.before_each do
-  reset_paths
+  reset_paths unless ENV["CLEAN"]? == "false"
 end
 
 Spec.after_each do
-  reset_paths
+  reset_paths unless ENV["CLEAN"]? == "false"
 end
 
 Spec.after_suite do

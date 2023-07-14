@@ -9,11 +9,13 @@ crystal: 1.6.0
 dependencies:
   athena-console:
     github: athena-framework/console
-    version: ~> 0.2.0
   crinja:
     github: straight-shoota/crinja
   crest:
     github: mamantoha/crest
+  webmock:
+    github: manastech/webmock.cr
+    branch: master
 
 targets:
   coffee_shop:

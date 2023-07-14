@@ -43,6 +43,10 @@ module Barista
       arr
     end
 
+    def self.name
+      @@name || {{ @type.id.stringify }}
+    end
+
     def name : String 
       @@name || {{ @type.id.stringify }}
     end
@@ -50,6 +54,10 @@ module Barista
 
   abstract class Task
     abstract def execute
+
+    macro include_behavior(behavior)
+      include Barista::Behaviors::{{ behavior }}::Task
+    end
 
     def initialize()
       {% for ann, idx in @type.annotations(::Barista::BelongsTo) %}
@@ -68,6 +76,10 @@ module Barista
         extend Barista::Projectable({{ ann[0] }})
         {{ ann[0] }}.tasks << self
       {% end %}
+
+      macro nametag(val)
+        @@name = \{{ val.id.stringify }}
+      end
 
       include Barista::TaskInstanceMethods
       extend Barista::TaskClassMethods

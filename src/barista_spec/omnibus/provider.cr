@@ -144,6 +144,8 @@ class BaristaSpec::Omnibus::Provider
             HTTP::Client::Response.new(200, body_io: File.open("#{task_path(task)}.tar.gz"), headers: headers)
           end
         end
+      elsif src.is_a?(Barista::Behaviors::Software::Fetchers::Local)
+        task.local_source(task_path(task))
       end
     end
   end

@@ -77,11 +77,15 @@ module Barista
         end
 
         def inclusions
-          Dir.glob(includes, true)
+          Dir.glob(includes, true).map do |path|
+            Path[path].normalize.to_s
+          end
         end
 
         def exclusions
-          Dir.glob(exclude, true)
+          Dir.glob(exclude, true).map do |path|
+            Path[path].normalize.to_s
+          end
         end
       end
     end

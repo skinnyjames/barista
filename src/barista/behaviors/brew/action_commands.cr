@@ -2,6 +2,8 @@ module Barista
   module Behaviors
     module Brew
       module ActionCommands
+        include Barista::Behaviors::Software::OS::Information
+
         class CommandResponse
           delegate(
             :success?,
@@ -21,7 +23,11 @@ module Barista
           error = IO::Memory.new
 
           if as_user
-            new_command = "su -c #{Process.quote(command)} #{as_user}"
+            if platform.family == "mac_os_x"
+              new_command = "su #{Process.quote(command)} #{as_user}" 
+            else
+              new_command = "su -c #{Process.quote(command)} #{as_user}"
+            end
           else
             new_command = command
           end
@@ -38,6 +44,7 @@ module Barista
             if as_user
               new_command = "su"
               args = ["-c", safe_command(command, args), as_user]
+              args.shift if platform.family == "mac_os_x"
               Process.run(new_command, args, shell: false, output: output, error: error, env: env, chdir: chdir)
             else
               Process.run(command, args, shell: false, output: output, error: error, env: env, chdir: chdir)

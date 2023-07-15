@@ -43,7 +43,9 @@ module Barista
           status = begin 
             if as_user
               new_command = "su"
-              args = ["-c", safe_command(command, args), as_user]
+              safe = safe_command(command, args)
+              safe = Process.quote(safe) if platform.family == "mac_os_x"
+              args = ["-c", safe, as_user]
               args.shift if platform.family == "mac_os_x"
               Process.run(new_command, args, shell: false, output: output, error: error, env: env, chdir: chdir)
             else

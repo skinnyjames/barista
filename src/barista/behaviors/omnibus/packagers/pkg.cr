@@ -24,6 +24,8 @@ module Barista
           gen_method(:signing_identity, String?) { nil }
           gen_method(:license_template, String) { LICENSE_TEMPLATE }
           gen_method(:welcome_template, String) { WELCOME_TEMPLATE }
+          gen_method(:distribution_template, String) { DISTRIBUTION_TEMPLATE }
+          gen_method(:image, String) { BG_TEMPLATE }
 
           def supported? : Bool
             Pkg.supported?
@@ -53,7 +55,7 @@ module Barista
             task_mkdir(resources_path)
             task_mkdir(scripts_path)
 
-            File.write(File.join(resources_path, "background.png"), BG_TEMPLATE)
+            File.write(File.join(resources_path, "background.png"), image)
 
             Software::Commands::Template.new(
               src: license_template, 
@@ -124,7 +126,7 @@ module Barista
 
           def write_distribution_file
             Software::Commands::Template.new(
-              src: DISTRIBUTION_TEMPLATE, 
+              src: distribution_template, 
               dest: File.join(staging_path, "Distribution.xml"),
               mode: File::Permissions.new(0o755),
               vars: Crinja.variables({

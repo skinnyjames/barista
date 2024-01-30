@@ -7,6 +7,7 @@ module Barista
           LICENSE_TEMPLATE = Barista.project_file("/behaviors/omnibus/packagers/scripts/pkg/license.html.hbs")
           WELCOME_TEMPLATE = Barista.project_file("/behaviors/omnibus/packagers/scripts/pkg/welcome.html.hbs")
           BG_TEMPLATE = Barista.project_file("/behaviors/omnibus/packagers/scripts/pkg/background.png")
+          ENTITLEMENTS_TEMPLATE = Barista.project_file("/behaviors/omnibus/packagers/scripts/pkg/entitlements.plist.hbs")
 
           SCRIPT_MAP = {
             :preinst => "preinstall",
@@ -22,6 +23,8 @@ module Barista
           gen_supported("which pkgbuild", /pkgbuild not found/)
           gen_method(:identifier, String?) { nil }
           gen_method(:signing_identity, String?) { nil }
+          gen_method(:codesigning_identity, String?) { nil }
+          gen_method(:entitlements, Array(String)? ) { nil }
           gen_method(:license_template, String) { LICENSE_TEMPLATE }
           gen_method(:welcome_template, String) { WELCOME_TEMPLATE }
           gen_method(:distribution_template, String) { DISTRIBUTION_TEMPLATE }
@@ -115,13 +118,34 @@ module Barista
 
             EOH
 
-            command += " --sign \"#{signing_identity}\" \\\n" if signing_identity
+            command += " --sign \"#{signing_identity}\"" if signing_identity
             command += " \"#{component_pkg}\""
             command += "\n"
 
             Dir.cd(staging_path) do
               `#{command}`
             end
+          end
+
+          def write_entitlements_file
+            if etlm = entitlements
+              Software::Commands::Template.new(
+                src: ENTITLEMENTS_TEMPLATE,
+                dest: entitlements_path,
+                mode: File::Permissions.new(0o755),
+                vars: Crinja.variables({
+                  "entitlements" => etlm
+                }),
+                string: true
+              )
+              .forward_output(&on_output)
+              .forward_error(&on_error)
+              .execute
+            end
+          end
+
+          def entitlements_path : String
+            File.join(project.package_dir, "entitlements.plist")
           end
 
           def write_distribution_file
@@ -183,7 +207,7 @@ module Barista
           def build_product_pkg
             command = String.build do |io|
               io << "productbuild --distribution \"#{staging_path}/Distribution.xml\" --resources \"#{resources_path}\""
-              io << " --sign \"#{signing_identity} \\\n\"" if signing_identity
+              io << " --sign \"#{signing_identity}\"" if signing_identity
               io.puts " \"#{final_pkg}\""
             end
 
@@ -192,9 +216,10 @@ module Barista
             end
           end
 
-          def sign(bin, hardened_runtime = false)
+          def sign(bin, hardened_runtime = true)
             command = String.build do |io|
-              io << "codesign -s '#{signing_identity}' '#{bin}'"
+              io << "codesign -s '#{codesigning_identity}' '#{bin}'"
+              io << " --timestamp"
               io << " --options=runtime" if hardened_runtime
               io << " --entitlements #{entitlements_path}" if entitlements_path && File.exists?(entitlements_path) && hardened_runtime
               io.puts " --force"
@@ -222,9 +247,15 @@ module Barista
             prepare_dir
           end
 
-          def sign_software
-            if signing_identity
-              raise "Signing not supported"
+          def sign_software(hardened_runtime = true)
+            if codesigning_identity
+              ["lib", "bin"].each do |type|
+                Dir.glob("#{install_dir}/embedded/#{type}/**/*") do |file|
+                  next if File.directory?(file)
+                  puts "signing #{file}"
+                  sign(file, hardened_runtime)
+                end
+              end
             end
           end
 

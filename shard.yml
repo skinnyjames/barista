@@ -1,5 +1,5 @@
 name: barista
-version: 0.2.0
+version: 0.2.1
 
 authors:
   - Sean Gregory <sean.christopher.gregory@gmail.com>
@@ -11,8 +11,8 @@ dependencies:
     github: athena-framework/console
   crinja:
     github: straight-shoota/crinja
-  crest:
-    github: mamantoha/crest
+
+development_dependencies:
   webmock:
     github: manastech/webmock.cr
     branch: master
